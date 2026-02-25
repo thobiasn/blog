@@ -1,0 +1,5 @@
+blog.db
+.env
+*.age
+tmp/
+blog

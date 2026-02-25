@@ -1,0 +1,170 @@
+package main
+
+import (
+	"context"
+	"html/template"
+	"log"
+	"net/http"
+	"os"
+	"os/signal"
+	"path/filepath"
+	"sync"
+	"syscall"
+	"time"
+
+	"github.com/yuin/goldmark"
+)
+
+type App struct {
+	cfg       Config
+	posts     []Post
+	pages     []Page
+	tmpls     map[string]*template.Template
+	md        goldmark.Markdown
+	chromaCSS string
+	mu        sync.RWMutex
+}
+
+func serve() {
+	cfg := LoadConfig()
+	md := newMarkdown()
+
+	chromaCSS, err := generateChromaCSS()
+	if err != nil {
+		log.Fatalf("generating chroma css: %v", err)
+	}
+
+	app := &App{
+		cfg:       cfg,
+		md:        md,
+		chromaCSS: chromaCSS,
+		tmpls:     parseTemplates(),
+	}
+
+	if err := app.reload(); err != nil {
+		log.Fatalf("loading content: %v", err)
+	}
+
+	mux := http.NewServeMux()
+	mux.HandleFunc("GET /{$}", app.handleHome)
+	mux.HandleFunc("GET /posts", app.handlePostList)
+	mux.HandleFunc("GET /posts/{slug}", app.handlePost)
+	mux.HandleFunc("GET /uses", app.handlePage)
+	mux.HandleFunc("GET /now", app.handlePage)
+	mux.HandleFunc("GET /static/chroma.css", app.handleChromaCSS)
+	mux.Handle("GET /static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+	mux.Handle("GET /images/", http.StripPrefix("/images/", http.FileServer(http.Dir(filepath.Join(cfg.ContentDir, "images")))))
+
+	srv := &http.Server{
+		Addr:    ":" + cfg.Port,
+		Handler: app.notFoundMiddleware(mux),
+	}
+
+	// SIGHUP reloads content
+	sighup := make(chan os.Signal, 1)
+	signal.Notify(sighup, syscall.SIGHUP)
+	go func() {
+		for range sighup {
+			log.Println("received SIGHUP, reloading content")
+			if err := app.reload(); err != nil {
+				log.Printf("reload error: %v", err)
+			} else {
+				log.Println("content reloaded")
+			}
+		}
+	}()
+
+	// Graceful shutdown on SIGTERM/SIGINT
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, syscall.SIGTERM, syscall.SIGINT)
+	go func() {
+		<-stop
+		log.Println("shutting down...")
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		srv.Shutdown(ctx)
+	}()
+
+	log.Printf("listening on :%s", cfg.Port)
+	if err := srv.ListenAndServe(); err != http.ErrServerClosed {
+		log.Fatal(err)
+	}
+}
+
+func parseTemplates() map[string]*template.Template {
+	funcMap := template.FuncMap{
+		"formatDate": func(t time.Time) string {
+			return t.Format("January 2, 2006")
+		},
+		"shortDate": func(t time.Time) string {
+			return t.Format("2006-01-02")
+		},
+	}
+
+	names := []string{"home", "post", "post_list", "page", "404"}
+	tmpls := make(map[string]*template.Template, len(names))
+	for _, name := range names {
+		tmpls[name] = template.Must(
+			template.New("base.html").Funcs(funcMap).ParseFiles(
+				"templates/base.html",
+				"templates/"+name+".html",
+			),
+		)
+	}
+	return tmpls
+}
+
+func (app *App) render(w http.ResponseWriter, name string, data any) {
+	tmpl, ok := app.tmpls[name]
+	if !ok {
+		http.Error(w, "template not found", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	if err := tmpl.ExecuteTemplate(w, "base.html", data); err != nil {
+		log.Printf("template error: %v", err)
+	}
+}
+
+func (app *App) handleChromaCSS(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/css")
+	w.Header().Set("Cache-Control", "public, max-age=86400")
+	w.Write([]byte(app.chromaCSS))
+}
+
+func (app *App) notFoundMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		rw := &statusRecorder{ResponseWriter: w, status: 200}
+		next.ServeHTTP(rw, r)
+		if rw.status == http.StatusNotFound {
+			app.renderNotFound(w, r)
+		}
+	})
+}
+
+type statusRecorder struct {
+	http.ResponseWriter
+	status      int
+	wroteHeader bool
+}
+
+func (sr *statusRecorder) WriteHeader(code int) {
+	sr.status = code
+	sr.wroteHeader = true
+	if code != http.StatusNotFound {
+		sr.ResponseWriter.WriteHeader(code)
+	}
+}
+
+func (sr *statusRecorder) Write(b []byte) (int, error) {
+	if sr.status == http.StatusNotFound {
+		return len(b), nil // discard default 404 body
+	}
+	return sr.ResponseWriter.Write(b)
+}
+
+func (app *App) renderNotFound(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusNotFound)
+	app.tmpls["404"].ExecuteTemplate(w, "base.html", nil)
+}

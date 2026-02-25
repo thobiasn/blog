@@ -1,0 +1,30 @@
+{{define "base.html"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{block "title" .}}thobiasn.dev{{end}}</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/chroma.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="nav-home">thobiasn.dev</a>
+            <div class="nav-links">
+                <a href="/posts">Posts</a>
+                <a href="/uses">Uses</a>
+                <a href="/now">Now</a>
+            </div>
+        </nav>
+    </header>
+    <main>
+        {{block "content" .}}{{end}}
+    </main>
+    <footer>
+        <p>&copy; 2026 thobiasn.dev</p>
+    </footer>
+</body>
+</html>
+{{end}}
