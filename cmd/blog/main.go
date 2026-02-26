@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
+
+	"github.com/thobiasn/blog/internal"
 )
 
 func main() {
@@ -13,7 +15,7 @@ func main() {
 
 	switch cmd {
 	case "serve":
-		serve()
+		blog.Serve()
 	default:
 		fmt.Fprintf(os.Stderr, "unknown command: %s\nusage: blog serve\n", cmd)
 		os.Exit(1)

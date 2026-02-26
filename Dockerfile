@@ -2,8 +2,9 @@ FROM golang:1.25-alpine AS build
 WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
-COPY *.go ./
-RUN go build -o blog .
+COPY cmd/ ./cmd/
+COPY internal/ ./internal/
+RUN go build -o blog ./cmd/blog
 
 FROM alpine:3.21
 WORKDIR /app

@@ -1,4 +1,4 @@
-package main
+package blog
 
 import (
 	"context"
@@ -25,7 +25,7 @@ type App struct {
 	mu        sync.RWMutex
 }
 
-func serve() {
+func Serve() {
 	cfg := LoadConfig()
 	md := newMarkdown()
 
