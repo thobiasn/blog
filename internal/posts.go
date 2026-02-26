@@ -5,6 +5,7 @@ import "net/http"
 func (app *App) handleHome(w http.ResponseWriter, r *http.Request) {
 	app.mu.RLock()
 	posts := publicPosts(app.posts)
+	featured := featuredProjects(app.projects)
 	app.mu.RUnlock()
 
 	limit := 5
@@ -13,7 +14,8 @@ func (app *App) handleHome(w http.ResponseWriter, r *http.Request) {
 	}
 
 	app.render(w, "home", map[string]any{
-		"Posts": posts[:limit],
+		"Posts":    posts[:limit],
+		"Projects": featured,
 	})
 }
 
@@ -40,20 +42,29 @@ func (app *App) handlePost(w http.ResponseWriter, r *http.Request) {
 	post, ok := findPost(app.posts, slug)
 	app.mu.RUnlock()
 
-	if !ok || post.Status != "public" {
+	if !ok {
 		app.renderNotFound(w, r)
 		return
 	}
 
+	// In production, only show public non-private posts
+	if !app.cfg.isLocal() && (post.Status != "public" || post.Private) {
+		app.renderNotFound(w, r)
+		return
+	}
+
+	comments := app.commentsBySlug(slug)
+
 	app.render(w, "post", map[string]any{
-		"Post": post,
+		"Post":     post,
+		"Comments": comments,
 	})
 }
 
 func publicPosts(posts []Post) []Post {
 	var out []Post
 	for _, p := range posts {
-		if p.Status == "public" {
+		if p.Status == "public" && !p.Private {
 			out = append(out, p)
 		}
 	}

@@ -1,0 +1,30 @@
+{{define "title"}}{{.Project.Title}} — thobiasn.dev{{end}}
+
+{{define "content"}}
+<article class="project">
+    <header class="project-header">
+        <h1>{{.Project.Title}}</h1>
+        <span class="status-badge">{{.Project.Status}}</span>
+        {{if .Project.Repo}}
+        <a href="{{.Project.Repo}}" class="project-repo">Repository</a>
+        {{end}}
+    </header>
+    <div class="project-body">
+        {{.Project.Body}}
+    </div>
+</article>
+
+{{if .RelatedPosts}}
+<section class="related-posts">
+    <h2>Related posts</h2>
+    <ul class="post-list">
+        {{range .RelatedPosts}}
+        <li>
+            <a href="/posts/{{.Slug}}">{{.Title}}</a>
+            <time datetime="{{shortDate .Date}}">{{formatDate .Date}}</time>
+        </li>
+        {{end}}
+    </ul>
+</section>
+{{end}}
+{{end}}

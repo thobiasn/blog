@@ -1,0 +1,19 @@
+{{define "title"}}Projects — thobiasn.dev{{end}}
+
+{{define "content"}}
+<h1>Projects</h1>
+
+{{if .Projects}}
+<ul class="project-list">
+    {{range .Projects}}
+    <li>
+        <a href="/projects/{{.Slug}}">{{.Title}}</a>
+        <span class="status-badge">{{.Status}}</span>
+        {{if .Description}}<p>{{.Description}}</p>{{end}}
+    </li>
+    {{end}}
+</ul>
+{{else}}
+<p>No projects yet.</p>
+{{end}}
+{{end}}

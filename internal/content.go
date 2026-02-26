@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
+	"log"
 	"os"
 	"path/filepath"
 	"sort"
@@ -28,6 +29,7 @@ type Post struct {
 	Description string
 	Status      string
 	Project     string
+	Private     bool
 	Date        time.Time
 	Tags        []string
 	Body        template.HTML
@@ -90,22 +92,30 @@ func generateChromaCSS() (string, error) {
 }
 
 func loadAllPosts(dir string, md goldmark.Markdown) ([]Post, error) {
-	pattern := filepath.Join(dir, "posts", "*.md")
-	files, err := filepath.Glob(pattern)
-	if err != nil {
-		return nil, err
+	dirs := []struct {
+		path    string
+		private bool
+	}{
+		{filepath.Join(dir, "posts"), false},
+		{filepath.Join(dir, "private"), true},
 	}
 
 	var posts []Post
-	for _, f := range files {
-		if strings.HasSuffix(f, ".md.age") {
-			continue
-		}
-		p, err := parsePost(f, md)
+	for _, d := range dirs {
+		files, err := filepath.Glob(filepath.Join(d.path, "*.md"))
 		if err != nil {
-			return nil, fmt.Errorf("parsing %s: %w", f, err)
+			return nil, err
 		}
-		posts = append(posts, p)
+		for _, f := range files {
+			p, err := parsePost(f, md)
+			if err != nil {
+				// Skip unparseable files (e.g. git-crypt binary blobs)
+				log.Printf("skipping %s: %v", f, err)
+				continue
+			}
+			p.Private = d.private
+			posts = append(posts, p)
+		}
 	}
 
 	sort.Slice(posts, func(i, j int) bool {
@@ -221,10 +231,12 @@ func (app *App) reload() error {
 	if err != nil {
 		return err
 	}
+	projects := loadAllProjects(app.cfg.ContentDir, app.md)
 
 	app.mu.Lock()
 	app.posts = posts
 	app.pages = pages
+	app.projects = projects
 	app.mu.Unlock()
 	return nil
 }

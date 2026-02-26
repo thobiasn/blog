@@ -2,6 +2,7 @@ package blog
 
 import (
 	"context"
+	"database/sql"
 	"html/template"
 	"log"
 	"net/http"
@@ -17,11 +18,14 @@ import (
 
 type App struct {
 	cfg       Config
+	db        *sql.DB
 	posts     []Post
 	pages     []Page
+	projects  []Project
 	tmpls     map[string]*template.Template
 	md        goldmark.Markdown
 	chromaCSS string
+	limiter   *rateLimiter
 	mu        sync.RWMutex
 }
 
@@ -34,11 +38,19 @@ func Serve() {
 		log.Fatalf("generating chroma css: %v", err)
 	}
 
+	db, err := openDB(cfg.DBPath)
+	if err != nil {
+		log.Fatalf("opening database: %v", err)
+	}
+	defer db.Close()
+
 	app := &App{
 		cfg:       cfg,
+		db:        db,
 		md:        md,
 		chromaCSS: chromaCSS,
 		tmpls:     parseTemplates(),
+		limiter:   newRateLimiter(),
 	}
 
 	if err := app.reload(); err != nil {
@@ -49,11 +61,20 @@ func Serve() {
 	mux.HandleFunc("GET /{$}", app.handleHome)
 	mux.HandleFunc("GET /posts", app.handlePostList)
 	mux.HandleFunc("GET /posts/{slug}", app.handlePost)
+	mux.HandleFunc("POST /posts/{slug}/comments", app.handleCommentSubmit)
+	mux.HandleFunc("GET /projects", app.handleProjectList)
+	mux.HandleFunc("GET /projects/{slug}", app.handleProject)
 	mux.HandleFunc("GET /uses", app.handlePage)
 	mux.HandleFunc("GET /now", app.handlePage)
 	mux.HandleFunc("GET /static/chroma.css", app.handleChromaCSS)
 	mux.Handle("GET /static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	mux.Handle("GET /images/", http.StripPrefix("/images/", http.FileServer(http.Dir(filepath.Join(cfg.ContentDir, "images")))))
+
+	// Admin API
+	mux.HandleFunc("GET /api/admin/stats", app.requireAdmin(app.handleAdminStats))
+	mux.HandleFunc("GET /api/admin/comments", app.requireAdmin(app.handleAdminComments))
+	mux.HandleFunc("POST /api/admin/comments/{id}/toggle", app.requireAdmin(app.handleAdminCommentToggle))
+	mux.HandleFunc("POST /api/admin/comments/{id}/delete", app.requireAdmin(app.handleAdminCommentDelete))
 
 	srv := &http.Server{
 		Addr:    ":" + cfg.Port,
@@ -101,7 +122,7 @@ func parseTemplates() map[string]*template.Template {
 		},
 	}
 
-	names := []string{"home", "post", "post_list", "page", "404"}
+	names := []string{"home", "post", "post_list", "page", "project", "project_list", "404"}
 	tmpls := make(map[string]*template.Template, len(names))
 	for _, name := range names {
 		tmpls[name] = template.Must(

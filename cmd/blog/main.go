@@ -8,16 +8,22 @@ import (
 )
 
 func main() {
-	cmd := "serve"
-	if len(os.Args) > 1 {
-		cmd = os.Args[1]
+	if len(os.Args) < 2 {
+		blog.Dashboard()
+		return
 	}
 
-	switch cmd {
+	switch os.Args[1] {
 	case "serve":
 		blog.Serve()
+	case "new":
+		blog.New(os.Args[2:])
+	case "comments":
+		blog.Comments(os.Args[2:])
+	case "subscribers":
+		blog.Subscribers(os.Args[2:])
 	default:
-		fmt.Fprintf(os.Stderr, "unknown command: %s\nusage: blog serve\n", cmd)
+		fmt.Fprintf(os.Stderr, "unknown command: %s\nusage: blog [serve|new|comments|subscribers]\n", os.Args[1])
 		os.Exit(1)
 	}
 }

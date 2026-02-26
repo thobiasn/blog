@@ -21,4 +21,20 @@
     <p><a href="/posts">All posts &rarr;</a></p>
 </section>
 {{end}}
+
+{{if .Projects}}
+<section class="featured-projects">
+    <h2>Projects</h2>
+    <ul class="project-list">
+        {{range .Projects}}
+        <li>
+            <a href="/projects/{{.Slug}}">{{.Title}}</a>
+            <span class="status-badge">{{.Status}}</span>
+            {{if .Description}}<p>{{.Description}}</p>{{end}}
+        </li>
+        {{end}}
+    </ul>
+    <p><a href="/projects">All projects &rarr;</a></p>
+</section>
+{{end}}
 {{end}}

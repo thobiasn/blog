@@ -10,9 +10,39 @@
             {{range .Post.Tags}}<a href="/posts?tag={{.}}" class="tag">{{.}}</a>{{end}}
         </div>
         {{end}}
+        {{if .Post.Project}}
+        <p class="post-project">Part of <a href="/projects/{{.Post.Project}}">{{.Post.Project}}</a></p>
+        {{end}}
     </header>
     <div class="post-body">
         {{.Post.Body}}
     </div>
 </article>
+
+<section class="comments" id="comments">
+    <h2>Comments</h2>
+    {{range .Comments}}
+    <div class="comment">
+        <div class="comment-meta">
+            <strong>{{.Author}}</strong>
+            <time datetime="{{shortDate .CreatedAt}}">{{formatDate .CreatedAt}}</time>
+        </div>
+        <p>{{.Body}}</p>
+    </div>
+    {{else}}
+    <p class="no-comments">No comments yet.</p>
+    {{end}}
+
+    <form class="comment-form" method="POST" action="/posts/{{.Post.Slug}}/comments">
+        <h3>Leave a comment</h3>
+        <div style="display:none">
+            <input type="text" name="url" tabindex="-1" autocomplete="off">
+        </div>
+        <label for="author">Name</label>
+        <input type="text" id="author" name="author" required>
+        <label for="body">Comment</label>
+        <textarea id="body" name="body" rows="4" required></textarea>
+        <button type="submit">Submit</button>
+    </form>
+</section>
 {{end}}
