@@ -3,6 +3,7 @@ package blog
 import (
 	"crypto/subtle"
 	"encoding/json"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -18,6 +19,7 @@ func (app *App) requireAdmin(next http.HandlerFunc) http.HandlerFunc {
 
 		auth := r.Header.Get("Authorization")
 		if !strings.HasPrefix(auth, "Bearer ") || subtle.ConstantTimeCompare([]byte(auth[7:]), []byte(key)) != 1 {
+			log.Printf("unauthorized admin request from %s", clientIP(r))
 			http.Error(w, "unauthorized", http.StatusUnauthorized)
 			return
 		}

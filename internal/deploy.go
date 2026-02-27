@@ -31,6 +31,9 @@ func (app *App) handleDeploy(w http.ResponseWriter, r *http.Request) {
 	}
 
 	go func() {
+		app.deployMu.Lock()
+		defer app.deployMu.Unlock()
+
 		out, err := exec.Command("git", "pull", "--ff-only").CombinedOutput()
 		if err != nil {
 			log.Printf("git pull failed: %v\n%s", err, out)

@@ -75,12 +75,14 @@ func generateChromaCSS() (string, error) {
 	formatter := html.New(html.WithClasses(true))
 
 	light := styles.Get("github")
+	buf.WriteString("@media (prefers-color-scheme: light) {\n")
 	if err := formatter.WriteCSS(&buf, light); err != nil {
 		return "", fmt.Errorf("chroma light css: %w", err)
 	}
+	buf.WriteString("}\n")
 
+	dark := styles.Get("github-dark")
 	buf.WriteString("\n@media (prefers-color-scheme: dark) {\n")
-	dark := styles.Get("dracula")
 	if err := formatter.WriteCSS(&buf, dark); err != nil {
 		return "", fmt.Errorf("chroma dark css: %w", err)
 	}

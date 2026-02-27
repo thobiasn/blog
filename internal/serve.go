@@ -30,6 +30,7 @@ type App struct {
 	chromaCSS string
 	limiter   *rateLimiter
 	mu        sync.RWMutex
+	deployMu  sync.Mutex
 }
 
 func Serve() {
