@@ -34,10 +34,13 @@ type projectFrontmatter struct {
 	Tags        []string `yaml:"tags"`
 }
 
-func loadAllProjects(dir string, md goldmark.Markdown) []Project {
+func loadAllProjects(dir string, md goldmark.Markdown) ([]Project, error) {
 	files, err := filepath.Glob(filepath.Join(dir, "projects", "*.md"))
-	if err != nil || len(files) == 0 {
-		return nil
+	if err != nil {
+		return nil, err
+	}
+	if len(files) == 0 {
+		return nil, nil
 	}
 
 	var projects []Project
@@ -49,7 +52,7 @@ func loadAllProjects(dir string, md goldmark.Markdown) []Project {
 		}
 		projects = append(projects, p)
 	}
-	return projects
+	return projects, nil
 }
 
 func parseProject(path string, md goldmark.Markdown) (Project, error) {

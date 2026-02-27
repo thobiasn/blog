@@ -229,7 +229,10 @@ func (app *App) reload() error {
 	if err != nil {
 		return err
 	}
-	projects := loadAllProjects(app.cfg.ContentDir, app.md)
+	projects, err := loadAllProjects(app.cfg.ContentDir, app.md)
+	if err != nil {
+		return err
+	}
 
 	app.mu.Lock()
 	app.posts = posts

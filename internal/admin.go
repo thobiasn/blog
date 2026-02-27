@@ -4,6 +4,7 @@ import (
 	"crypto/subtle"
 	"encoding/json"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -82,6 +83,10 @@ func (app *App) handleAdminComments(w http.ResponseWriter, r *http.Request) {
 		}
 		comments = append(comments, c)
 	}
+	if err := rows.Err(); err != nil {
+		http.Error(w, "db error", http.StatusInternalServerError)
+		return
+	}
 
 	if comments == nil {
 		comments = []Comment{}
@@ -90,30 +95,46 @@ func (app *App) handleAdminComments(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *App) handleAdminCommentToggle(w http.ResponseWriter, r *http.Request) {
-	id := r.PathValue("id")
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		http.Error(w, "invalid id", http.StatusBadRequest)
+		return
+	}
 	if app.db == nil {
 		http.Error(w, "db not available", http.StatusServiceUnavailable)
 		return
 	}
 
-	_, err := app.db.Exec(`UPDATE comments SET visible = NOT visible WHERE id = ?`, id)
+	res, err := app.db.Exec(`UPDATE comments SET visible = NOT visible WHERE id = ?`, id)
 	if err != nil {
 		http.Error(w, "db error", http.StatusInternalServerError)
+		return
+	}
+	if n, _ := res.RowsAffected(); n == 0 {
+		http.Error(w, "comment not found", http.StatusNotFound)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
 }
 
 func (app *App) handleAdminCommentDelete(w http.ResponseWriter, r *http.Request) {
-	id := r.PathValue("id")
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		http.Error(w, "invalid id", http.StatusBadRequest)
+		return
+	}
 	if app.db == nil {
 		http.Error(w, "db not available", http.StatusServiceUnavailable)
 		return
 	}
 
-	_, err := app.db.Exec(`DELETE FROM comments WHERE id = ?`, id)
+	res, err := app.db.Exec(`DELETE FROM comments WHERE id = ?`, id)
 	if err != nil {
 		http.Error(w, "db error", http.StatusInternalServerError)
+		return
+	}
+	if n, _ := res.RowsAffected(); n == 0 {
+		http.Error(w, "comment not found", http.StatusNotFound)
 		return
 	}
 	w.WriteHeader(http.StatusOK)

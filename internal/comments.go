@@ -1,6 +1,7 @@
 package blog
 
 import (
+	"net"
 	"net/http"
 	"strings"
 	"sync"
@@ -41,6 +42,9 @@ func (app *App) commentsBySlug(slug string) []Comment {
 		c.Visible = true
 		comments = append(comments, c)
 	}
+	if err := rows.Err(); err != nil {
+		return nil
+	}
 	return comments
 }
 
@@ -68,6 +72,7 @@ func (app *App) handleCommentSubmit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	r.Body = http.MaxBytesReader(w, r.Body, 16*1024)
 	if err := r.ParseForm(); err != nil {
 		http.Error(w, "bad request", http.StatusBadRequest)
 		return
@@ -96,10 +101,10 @@ func (app *App) handleCommentSubmit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Rate limit by IP
-	ip := r.RemoteAddr
-	if fwd := r.Header.Get("X-Forwarded-For"); fwd != "" {
-		ip = strings.Split(fwd, ",")[0]
+	// Rate limit by IP (reverse proxy sets RemoteAddr; strip port)
+	ip, _, _ := net.SplitHostPort(r.RemoteAddr)
+	if ip == "" {
+		ip = r.RemoteAddr
 	}
 	if !app.limiter.allow(ip) {
 		http.Error(w, "too many comments, try again later", http.StatusTooManyRequests)

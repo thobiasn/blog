@@ -1,6 +1,7 @@
 package blog
 
 import (
+	"bytes"
 	"context"
 	"database/sql"
 	"html/template"
@@ -77,8 +78,12 @@ func Serve() {
 	mux.HandleFunc("POST /api/admin/comments/{id}/delete", app.requireAdmin(app.handleAdminCommentDelete))
 
 	srv := &http.Server{
-		Addr:    ":" + cfg.Port,
-		Handler: mux,
+		Addr:              ":" + cfg.Port,
+		Handler:           mux,
+		ReadHeaderTimeout: 5 * time.Second,
+		ReadTimeout:       10 * time.Second,
+		WriteTimeout:      30 * time.Second,
+		IdleTimeout:       120 * time.Second,
 	}
 
 	// SIGHUP reloads content
@@ -141,10 +146,14 @@ func (app *App) render(w http.ResponseWriter, name string, data any) {
 		http.Error(w, "template not found", http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	if err := tmpl.ExecuteTemplate(w, "base.html", data); err != nil {
+	var buf bytes.Buffer
+	if err := tmpl.ExecuteTemplate(&buf, "base.html", data); err != nil {
 		log.Printf("template error: %v", err)
+		http.Error(w, "internal error", http.StatusInternalServerError)
+		return
 	}
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	buf.WriteTo(w)
 }
 
 func (app *App) handleChromaCSS(w http.ResponseWriter, r *http.Request) {
