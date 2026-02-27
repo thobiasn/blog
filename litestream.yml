@@ -1,0 +1,9 @@
+dbs:
+  - path: /app/blog.db
+    replicas:
+      - type: s3
+        bucket: ${LITESTREAM_REPLICA_BUCKET}
+        path: blog.db
+        region: ${LITESTREAM_REPLICA_REGION}
+        access-key-id: ${LITESTREAM_ACCESS_KEY_ID}
+        secret-access-key: ${LITESTREAM_SECRET_ACCESS_KEY}

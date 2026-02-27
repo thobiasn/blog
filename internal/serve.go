@@ -66,6 +66,7 @@ func Serve() {
 	mux.HandleFunc("POST /posts/{slug}/comments", app.handleCommentSubmit)
 	mux.HandleFunc("GET /projects", app.handleProjectList)
 	mux.HandleFunc("GET /projects/{slug}", app.handleProject)
+	mux.HandleFunc("GET /search", app.handleSearch)
 	mux.HandleFunc("GET /rss.xml", app.handleRSS)
 	mux.HandleFunc("GET /subscribe", app.handleSubscribeForm)
 	mux.HandleFunc("POST /subscribe", app.handleSubscribe)
@@ -77,6 +78,8 @@ func Serve() {
 	mux.HandleFunc("GET /static/chroma.css", app.handleChromaCSS)
 	mux.Handle("GET /static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	mux.Handle("GET /images/", http.StripPrefix("/images/", http.FileServer(http.Dir(filepath.Join(cfg.ContentDir, "images")))))
+
+	mux.HandleFunc("GET /api/health", app.handleHealth)
 
 	// Admin API
 	mux.HandleFunc("GET /api/admin/stats", app.requireAdmin(app.handleAdminStats))
@@ -135,7 +138,7 @@ func parseTemplates() map[string]*template.Template {
 		},
 	}
 
-	names := []string{"home", "post", "post_list", "page", "project", "project_list", "subscribe", "404"}
+	names := []string{"home", "post", "post_list", "page", "project", "project_list", "subscribe", "search", "404"}
 	tmpls := make(map[string]*template.Template, len(names))
 	for _, name := range names {
 		tmpls[name] = template.Must(

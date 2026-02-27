@@ -52,6 +52,10 @@ func createTables(db *sql.DB) error {
 			slug        TEXT PRIMARY KEY,
 			notified_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 		);
+
+		CREATE VIRTUAL TABLE IF NOT EXISTS search_index USING fts5(
+			slug, title, tags, body, content_type
+		);
 	`)
 	if err != nil {
 		return fmt.Errorf("creating tables: %w", err)

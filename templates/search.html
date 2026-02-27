@@ -1,0 +1,25 @@
+{{define "title"}}Search — thobiasn.dev{{end}}
+{{define "content"}}
+<div class="search-page">
+    <h1>Search</h1>
+    <form class="search-form" action="/search" method="get">
+        <input type="search" name="q" value="{{.Query}}" placeholder="Search posts and projects..." autofocus>
+        <button type="submit">Search</button>
+    </form>
+    {{if .Query}}
+        {{if .Results}}
+            <ul class="search-results">
+                {{range .Results}}
+                <li>
+                    <a href="/{{.ContentType}}s/{{.Slug}}">{{.Title}}</a>
+                    <span class="search-type">{{.ContentType}}</span>
+                    <p>{{.Snippet}}</p>
+                </li>
+                {{end}}
+            </ul>
+        {{else}}
+            <p class="no-results">No results for "{{.Query}}"</p>
+        {{end}}
+    {{end}}
+</div>
+{{end}}
