@@ -1,7 +1,6 @@
 package blog
 
 import (
-	"net"
 	"net/http"
 	"strings"
 	"sync"
@@ -101,12 +100,7 @@ func (app *App) handleCommentSubmit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Rate limit by IP (reverse proxy sets RemoteAddr; strip port)
-	ip, _, _ := net.SplitHostPort(r.RemoteAddr)
-	if ip == "" {
-		ip = r.RemoteAddr
-	}
-	if !app.limiter.allow(ip) {
+	if !app.limiter.allow(clientIP(r)) {
 		http.Error(w, "too many comments, try again later", http.StatusTooManyRequests)
 		return
 	}

@@ -3,9 +3,9 @@ package blog
 import (
 	"crypto/rand"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"log"
-	"net"
 	"net/http"
 	"regexp"
 	"strings"
@@ -43,12 +43,7 @@ func (app *App) handleSubscribe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Rate limit by IP
-	ip, _, _ := net.SplitHostPort(r.RemoteAddr)
-	if ip == "" {
-		ip = r.RemoteAddr
-	}
-	if !app.limiter.allow("sub:" + ip) {
+	if !app.limiter.allow("sub:" + clientIP(r)) {
 		http.Error(w, "too many requests, try again later", http.StatusTooManyRequests)
 		return
 	}
@@ -135,7 +130,10 @@ func (app *App) handleAdminSubscribers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	fmt.Fprintf(w, `{"total":%d,"verified":%d}`, total, verified)
+	json.NewEncoder(w).Encode(struct {
+		Total    int `json:"total"`
+		Verified int `json:"verified"`
+	}{total, verified})
 }
 
 func (app *App) notifyNewPosts(posts []Post) {

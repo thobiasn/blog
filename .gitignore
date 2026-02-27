@@ -4,3 +4,4 @@ blog.db
 tmp/
 /blog
 docs/
+coverage.tmp

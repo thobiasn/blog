@@ -2,6 +2,7 @@ package blog
 
 import (
 	"database/sql"
+	"html"
 	"html/template"
 	"log"
 	"net/http"
@@ -82,7 +83,7 @@ func (app *App) handleSearch(w http.ResponseWriter, r *http.Request) {
 	q := strings.TrimSpace(r.URL.Query().Get("q"))
 
 	var results []SearchResult
-	if q != "" {
+	if q != "" && app.db != nil {
 		// Quote the query to prevent FTS5 operator injection
 		quoted := `"` + strings.ReplaceAll(q, `"`, `""`) + `"`
 		rows, err := app.db.Query(
@@ -101,6 +102,9 @@ func (app *App) handleSearch(w http.ResponseWriter, r *http.Request) {
 					log.Printf("search scan error: %v", err)
 					break
 				}
+					snippet = html.EscapeString(snippet)
+				snippet = strings.ReplaceAll(snippet, "&lt;mark&gt;", "<mark>")
+				snippet = strings.ReplaceAll(snippet, "&lt;/mark&gt;", "</mark>")
 				sr.Snippet = template.HTML(snippet)
 				results = append(results, sr)
 			}
@@ -114,11 +118,16 @@ func (app *App) handleSearch(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *App) handleHealth(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	if app.db == nil {
+		w.WriteHeader(http.StatusServiceUnavailable)
+		w.Write([]byte(`{"status":"error"}`))
+		return
+	}
 	if err := app.db.Ping(); err != nil {
 		w.WriteHeader(http.StatusServiceUnavailable)
 		w.Write([]byte(`{"status":"error"}`))
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(`{"status":"ok"}`))
 }

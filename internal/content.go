@@ -240,12 +240,14 @@ func (app *App) reload() error {
 	app.projects = projects
 	app.mu.Unlock()
 
+	pub := publicPosts(posts)
+
 	if app.db != nil {
-		rebuildSearchIndex(app.db, publicPosts(posts), projects)
+		rebuildSearchIndex(app.db, pub, projects)
 	}
 
 	if app.db != nil && app.cfg.smtpConfigured() {
-		go app.notifyNewPosts(publicPosts(posts))
+		go app.notifyNewPosts(pub)
 	}
 
 	return nil

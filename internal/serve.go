@@ -6,10 +6,12 @@ import (
 	"database/sql"
 	"html/template"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
 	"path/filepath"
+	"strings"
 	"sync"
 	"syscall"
 	"time"
@@ -88,9 +90,11 @@ func Serve() {
 	mux.HandleFunc("POST /api/admin/comments/{id}/delete", app.requireAdmin(app.handleAdminCommentDelete))
 	mux.HandleFunc("GET /api/admin/subscribers", app.requireAdmin(app.handleAdminSubscribers))
 
+	handler := securityHeaders(mux)
+
 	srv := &http.Server{
 		Addr:              ":" + cfg.Port,
-		Handler:           mux,
+		Handler:           handler,
 		ReadHeaderTimeout: 5 * time.Second,
 		ReadTimeout:       10 * time.Second,
 		WriteTimeout:      30 * time.Second,
@@ -173,8 +177,38 @@ func (app *App) handleChromaCSS(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(app.chromaCSS))
 }
 
+func securityHeaders(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("X-Content-Type-Options", "nosniff")
+		w.Header().Set("X-Frame-Options", "DENY")
+		next.ServeHTTP(w, r)
+	})
+}
+
+// clientIP returns the client's IP address, preferring X-Forwarded-For
+// (set by reverse proxies like Dokploy) over RemoteAddr.
+func clientIP(r *http.Request) string {
+	if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
+		// X-Forwarded-For: client, proxy1, proxy2 — first entry is the client
+		if ip, _, _ := strings.Cut(xff, ","); ip != "" {
+			return strings.TrimSpace(ip)
+		}
+	}
+	ip, _, _ := net.SplitHostPort(r.RemoteAddr)
+	if ip == "" {
+		return r.RemoteAddr
+	}
+	return ip
+}
+
 func (app *App) renderNotFound(w http.ResponseWriter, r *http.Request) {
+	var buf bytes.Buffer
+	if err := app.tmpls["404"].ExecuteTemplate(&buf, "base.html", nil); err != nil {
+		log.Printf("404 template error: %v", err)
+		http.Error(w, "not found", http.StatusNotFound)
+		return
+	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusNotFound)
-	app.tmpls["404"].ExecuteTemplate(w, "base.html", nil)
+	buf.WriteTo(w)
 }
