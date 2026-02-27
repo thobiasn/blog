@@ -17,7 +17,6 @@ import (
 	highlighting "github.com/yuin/goldmark-highlighting/v2"
 	"github.com/yuin/goldmark/extension"
 	"github.com/yuin/goldmark/parser"
-	"github.com/yuin/goldmark/renderer"
 	goldhtml "github.com/yuin/goldmark/renderer/html"
 	"go.abhg.dev/goldmark/anchor"
 	"go.abhg.dev/goldmark/frontmatter"
@@ -66,7 +65,6 @@ func newMarkdown() goldmark.Markdown {
 			parser.WithAutoHeadingID(),
 		),
 		goldmark.WithRendererOptions(
-			renderer.WithNodeRenderers(),
 			goldhtml.WithUnsafe(),
 		),
 	)

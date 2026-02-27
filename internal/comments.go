@@ -56,10 +56,14 @@ func (app *App) handleCommentSubmit(w http.ResponseWriter, r *http.Request) {
 	slug := r.PathValue("slug")
 
 	app.mu.RLock()
-	_, postExists := findPost(app.posts, slug)
+	post, postExists := findPost(app.posts, slug)
 	app.mu.RUnlock()
 
 	if !postExists {
+		http.Error(w, "post not found", http.StatusNotFound)
+		return
+	}
+	if !app.cfg.isLocal() && (post.Status != "public" || post.Private) {
 		http.Error(w, "post not found", http.StatusNotFound)
 		return
 	}
@@ -80,6 +84,10 @@ func (app *App) handleCommentSubmit(w http.ResponseWriter, r *http.Request) {
 
 	if author == "" || body == "" {
 		http.Error(w, "name and comment are required", http.StatusBadRequest)
+		return
+	}
+	if len(author) > 100 || len(body) > 5000 {
+		http.Error(w, "name or comment too long", http.StatusBadRequest)
 		return
 	}
 
@@ -112,6 +120,7 @@ type rateLimiter struct {
 	requests map[string][]time.Time
 	limit    int
 	window   time.Duration
+	calls    int
 }
 
 func newRateLimiter() *rateLimiter {
@@ -129,7 +138,17 @@ func (rl *rateLimiter) allow(key string) bool {
 	now := time.Now()
 	cutoff := now.Add(-rl.window)
 
-	// Clean old entries
+	// Periodically sweep stale keys to prevent unbounded growth
+	rl.calls++
+	if rl.calls%1000 == 0 {
+		for k, times := range rl.requests {
+			if len(times) > 0 && times[len(times)-1].Before(cutoff) {
+				delete(rl.requests, k)
+			}
+		}
+	}
+
+	// Clean old entries for this key
 	var recent []time.Time
 	for _, t := range rl.requests[key] {
 		if t.After(cutoff) {

@@ -26,7 +26,7 @@ func LoadConfig() Config {
 }
 
 func (c Config) isLocal() bool {
-	return strings.Contains(c.BaseURL, "localhost")
+	return strings.HasPrefix(c.BaseURL, "http://localhost")
 }
 
 func envOr(key, fallback string) string {

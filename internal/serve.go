@@ -78,7 +78,7 @@ func Serve() {
 
 	srv := &http.Server{
 		Addr:    ":" + cfg.Port,
-		Handler: app.notFoundMiddleware(mux),
+		Handler: mux,
 	}
 
 	// SIGHUP reloads content
@@ -151,37 +151,6 @@ func (app *App) handleChromaCSS(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/css")
 	w.Header().Set("Cache-Control", "public, max-age=86400")
 	w.Write([]byte(app.chromaCSS))
-}
-
-func (app *App) notFoundMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		rw := &statusRecorder{ResponseWriter: w, status: 200}
-		next.ServeHTTP(rw, r)
-		if rw.status == http.StatusNotFound {
-			app.renderNotFound(w, r)
-		}
-	})
-}
-
-type statusRecorder struct {
-	http.ResponseWriter
-	status      int
-	wroteHeader bool
-}
-
-func (sr *statusRecorder) WriteHeader(code int) {
-	sr.status = code
-	sr.wroteHeader = true
-	if code != http.StatusNotFound {
-		sr.ResponseWriter.WriteHeader(code)
-	}
-}
-
-func (sr *statusRecorder) Write(b []byte) (int, error) {
-	if sr.status == http.StatusNotFound {
-		return len(b), nil // discard default 404 body
-	}
-	return sr.ResponseWriter.Write(b)
 }
 
 func (app *App) renderNotFound(w http.ResponseWriter, r *http.Request) {
