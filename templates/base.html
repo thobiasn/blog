@@ -5,6 +5,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{block "title" .}}thobiasn.dev{{end}}</title>
+    <meta name="description" content="{{block "meta_description" .}}Personal blog by thobiasn{{end}}">
+    <meta property="og:title" content="{{block "og_title" .}}thobiasn.dev{{end}}">
+    <meta property="og:description" content="{{block "og_description" .}}Personal blog by thobiasn{{end}}">
+    <meta property="og:url" content="{{block "og_url" .}}https://thobiasn.dev{{end}}">
+    <meta property="og:type" content="{{block "og_type" .}}website{{end}}">
+    <meta property="og:site_name" content="thobiasn.dev">
+    <meta name="twitter:card" content="summary">
+    <link rel="alternate" type="application/rss+xml" title="thobiasn.dev" href="/rss.xml">
     <link rel="stylesheet" href="/static/style.css">
     <link rel="stylesheet" href="/static/chroma.css">
 </head>
@@ -24,6 +32,10 @@
         {{block "content" .}}{{end}}
     </main>
     <footer>
+        <p>
+            <a href="/rss.xml">RSS</a> &middot;
+            <a href="/subscribe">Subscribe</a>
+        </p>
         <p>&copy; 2026 thobiasn.dev</p>
     </footer>
 </body>

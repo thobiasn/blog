@@ -42,6 +42,7 @@ func Dashboard() {
 	fmt.Printf("Draft posts:   %d\n", stats.DraftPosts)
 	fmt.Printf("Private posts: %d\n", stats.PrivatePosts)
 	fmt.Printf("Comments:      %d\n", stats.Comments)
+	fmt.Printf("Subscribers:   %d\n", stats.Subscribers)
 }
 
 func Comments(args []string) {
@@ -114,5 +115,22 @@ func moderateComment(action, id string) {
 }
 
 func Subscribers(args []string) {
-	fmt.Println("No subscribers yet. (Subscriber management coming in Phase 3)")
+	resp, err := adminRequest("GET", "/api/admin/subscribers")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		os.Exit(1)
+	}
+	defer resp.Body.Close()
+
+	var result struct {
+		Total    int `json:"total"`
+		Verified int `json:"verified"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		fmt.Fprintf(os.Stderr, "error decoding response: %v\n", err)
+		os.Exit(1)
+	}
+
+	fmt.Printf("Total:    %d\n", result.Total)
+	fmt.Printf("Verified: %d\n", result.Verified)
 }

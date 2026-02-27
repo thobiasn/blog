@@ -31,6 +31,7 @@ type adminStats struct {
 	DraftPosts   int `json:"draft_posts"`
 	PrivatePosts int `json:"private_posts"`
 	Comments     int `json:"comments"`
+	Subscribers  int `json:"subscribers"`
 }
 
 func (app *App) handleAdminStats(w http.ResponseWriter, r *http.Request) {
@@ -52,6 +53,7 @@ func (app *App) handleAdminStats(w http.ResponseWriter, r *http.Request) {
 
 	if app.db != nil {
 		app.db.QueryRow(`SELECT COUNT(*) FROM comments`).Scan(&stats.Comments)
+		app.db.QueryRow(`SELECT COUNT(*) FROM subscribers WHERE verified = 1`).Scan(&stats.Subscribers)
 	}
 
 	w.Header().Set("Content-Type", "application/json")

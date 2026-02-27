@@ -119,6 +119,7 @@ func (app *App) handleProject(w http.ResponseWriter, r *http.Request) {
 	app.render(w, "project", map[string]any{
 		"Project":      project,
 		"RelatedPosts": related,
+		"BaseURL":      app.cfg.BaseURL,
 	})
 }
 

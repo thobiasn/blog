@@ -1,0 +1,24 @@
+{{define "title"}}Subscribe — thobiasn.dev{{end}}
+
+{{define "content"}}
+<section class="subscribe">
+    {{if .ShowForm}}
+    <h1>Subscribe</h1>
+    <p>Get notified when new posts are published.</p>
+    <form method="POST" action="/subscribe">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required placeholder="you@example.com">
+        <button type="submit">Subscribe</button>
+    </form>
+    {{else if .CheckEmail}}
+    <h1>Check your email</h1>
+    <p>We sent you a verification link. Click it to confirm your subscription.</p>
+    {{else if .Verified}}
+    <h1>Subscribed!</h1>
+    <p>You'll receive an email when new posts are published.</p>
+    {{else if .Unsubscribed}}
+    <h1>Unsubscribed</h1>
+    <p>You've been removed from the mailing list.</p>
+    {{end}}
+</section>
+{{end}}

@@ -35,13 +35,14 @@ func testApp(t *testing.T) *App {
 		limiter:   newRateLimiter(),
 		posts: []Post{
 			{
-				Title:   "First Post",
-				Slug:    "first-post",
-				Status:  "public",
-				Date:    time.Date(2026, 2, 25, 0, 0, 0, 0, time.UTC),
-				Tags:    []string{"go", "web"},
-				Body:    "<p>Hello world</p>",
-				Project: "blog",
+				Title:       "First Post",
+				Slug:        "first-post",
+				Description: "A post about Go and the web",
+				Status:      "public",
+				Date:        time.Date(2026, 2, 25, 0, 0, 0, 0, time.UTC),
+				Tags:        []string{"go", "web"},
+				Body:        "<p>Hello world</p>",
+				Project:     "blog",
 			},
 			{
 				Title:  "Draft Post",
@@ -96,7 +97,7 @@ func testTemplates(t *testing.T) map[string]*template.Template {
 	}
 
 	base := filepath.Join("..", "templates")
-	names := []string{"home", "post", "post_list", "page", "project", "project_list", "404"}
+	names := []string{"home", "post", "post_list", "page", "project", "project_list", "subscribe", "404"}
 	tmpls := make(map[string]*template.Template, len(names))
 	for _, name := range names {
 		tmpl, err := template.New("base.html").Funcs(funcMap).ParseFiles(

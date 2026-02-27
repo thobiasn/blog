@@ -1,4 +1,8 @@
 {{define "title"}}{{.Project.Title}} — thobiasn.dev{{end}}
+{{define "meta_description"}}{{.Project.Description}}{{end}}
+{{define "og_title"}}{{.Project.Title}}{{end}}
+{{define "og_description"}}{{.Project.Description}}{{end}}
+{{define "og_url"}}{{.BaseURL}}/projects/{{.Project.Slug}}{{end}}
 
 {{define "content"}}
 <article class="project">

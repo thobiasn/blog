@@ -239,5 +239,10 @@ func (app *App) reload() error {
 	app.pages = pages
 	app.projects = projects
 	app.mu.Unlock()
+
+	if app.db != nil && app.cfg.smtpConfigured() {
+		go app.notifyNewPosts(publicPosts(posts))
+	}
+
 	return nil
 }

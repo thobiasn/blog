@@ -57,6 +57,7 @@ func Serve() {
 	if err := app.reload(); err != nil {
 		log.Fatalf("loading content: %v", err)
 	}
+	app.seedNotifiedPosts()
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /{$}", app.handleHome)
@@ -65,6 +66,12 @@ func Serve() {
 	mux.HandleFunc("POST /posts/{slug}/comments", app.handleCommentSubmit)
 	mux.HandleFunc("GET /projects", app.handleProjectList)
 	mux.HandleFunc("GET /projects/{slug}", app.handleProject)
+	mux.HandleFunc("GET /rss.xml", app.handleRSS)
+	mux.HandleFunc("GET /subscribe", app.handleSubscribeForm)
+	mux.HandleFunc("POST /subscribe", app.handleSubscribe)
+	mux.HandleFunc("GET /subscribe/verify", app.handleSubscribeVerify)
+	mux.HandleFunc("GET /subscribe/remove", app.handleSubscribeRemove)
+	mux.HandleFunc("POST /deploy", app.handleDeploy)
 	mux.HandleFunc("GET /uses", app.handlePage)
 	mux.HandleFunc("GET /now", app.handlePage)
 	mux.HandleFunc("GET /static/chroma.css", app.handleChromaCSS)
@@ -76,6 +83,7 @@ func Serve() {
 	mux.HandleFunc("GET /api/admin/comments", app.requireAdmin(app.handleAdminComments))
 	mux.HandleFunc("POST /api/admin/comments/{id}/toggle", app.requireAdmin(app.handleAdminCommentToggle))
 	mux.HandleFunc("POST /api/admin/comments/{id}/delete", app.requireAdmin(app.handleAdminCommentDelete))
+	mux.HandleFunc("GET /api/admin/subscribers", app.requireAdmin(app.handleAdminSubscribers))
 
 	srv := &http.Server{
 		Addr:              ":" + cfg.Port,
@@ -127,7 +135,7 @@ func parseTemplates() map[string]*template.Template {
 		},
 	}
 
-	names := []string{"home", "post", "post_list", "page", "project", "project_list", "404"}
+	names := []string{"home", "post", "post_list", "page", "project", "project_list", "subscribe", "404"}
 	tmpls := make(map[string]*template.Template, len(names))
 	for _, name := range names {
 		tmpls[name] = template.Must(

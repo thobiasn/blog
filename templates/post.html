@@ -1,4 +1,9 @@
 {{define "title"}}{{.Post.Title}} — thobiasn.dev{{end}}
+{{define "meta_description"}}{{.Post.Description}}{{end}}
+{{define "og_title"}}{{.Post.Title}}{{end}}
+{{define "og_description"}}{{.Post.Description}}{{end}}
+{{define "og_url"}}{{.BaseURL}}/posts/{{.Post.Slug}}{{end}}
+{{define "og_type"}}article{{end}}
 
 {{define "content"}}
 <article class="post">

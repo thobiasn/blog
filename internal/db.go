@@ -38,6 +38,20 @@ func createTables(db *sql.DB) error {
 			created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 		);
 		CREATE INDEX IF NOT EXISTS idx_comments_post_slug ON comments(post_slug);
+
+		CREATE TABLE IF NOT EXISTS subscribers (
+			id                INTEGER PRIMARY KEY AUTOINCREMENT,
+			email             TEXT NOT NULL UNIQUE,
+			verified          BOOLEAN NOT NULL DEFAULT 0,
+			verify_token      TEXT NOT NULL,
+			unsubscribe_token TEXT NOT NULL,
+			created_at        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+		);
+
+		CREATE TABLE IF NOT EXISTS notified_posts (
+			slug        TEXT PRIMARY KEY,
+			notified_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+		);
 	`)
 	if err != nil {
 		return fmt.Errorf("creating tables: %w", err)

@@ -58,6 +58,7 @@ func (app *App) handlePost(w http.ResponseWriter, r *http.Request) {
 	app.render(w, "post", map[string]any{
 		"Post":     post,
 		"Comments": comments,
+		"BaseURL":  app.cfg.BaseURL,
 	})
 }
 
