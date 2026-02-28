@@ -151,6 +151,7 @@ func parseTemplates(cfg Config) map[string]*template.Template {
 		tmpls[name] = template.Must(
 			template.New("base.html").Funcs(funcMap).ParseFiles(
 				"templates/base.html",
+				"templates/tracking.html",
 				"templates/"+name+".html",
 			),
 		)

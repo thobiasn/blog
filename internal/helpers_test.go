@@ -85,7 +85,7 @@ func testTemplates(t *testing.T) map[string]*template.Template {
 	funcMap := template.FuncMap{
 		"formatDate": func(t time.Time) string { return t.Format("January 2, 2006") },
 		"shortDate":  func(t time.Time) string { return t.Format("2006-01-02") },
-		"isLocal":    func() bool { return true },
+		"isLocal": func() bool { return true },
 	}
 
 	base := filepath.Join("..", "templates")
@@ -94,6 +94,7 @@ func testTemplates(t *testing.T) map[string]*template.Template {
 	for _, name := range names {
 		tmpl, err := template.New("base.html").Funcs(funcMap).ParseFiles(
 			filepath.Join(base, "base.html"),
+			filepath.Join(base, "tracking.html"),
 			filepath.Join(base, name+".html"),
 		)
 		if err != nil {
