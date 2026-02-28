@@ -179,12 +179,15 @@ nav {
 }
 
 .post-body ul,
-.post-body ol {
+.post-body ol,
+.project-body ul,
+.project-body ol {
     padding-left: 1.5rem;
     margin-bottom: 1rem;
 }
 
-.post-body li {
+.post-body li,
+.project-body li {
     margin-bottom: 0.25rem;
 }
 
