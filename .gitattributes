@@ -1,1 +1,2 @@
 content/private/** filter=git-crypt diff=git-crypt
+content/private/.gitkeep !filter !diff
