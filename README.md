@@ -84,9 +84,19 @@ content/private/** filter=git-crypt diff=git-crypt
 
 Then write private posts normally — git-crypt encrypts on push and decrypts on pull.
 
-**On a new machine:** Copy the key or run `git-crypt unlock /path/to/exported-key`.
+**Back up the key:** The key lives only in your local `.git/` directory. If you lose it, encrypted posts in the remote repo are unrecoverable. Export a base64-encoded copy for your password manager:
 
-**Back up the key:** The key lives only in your local `.git/` directory. If you lose it, encrypted posts in the remote repo are unrecoverable. Export a backup with `git-crypt export-key ~/path/to/backup` and store it somewhere safe (e.g., password manager).
+```bash
+git-crypt export-key /dev/stdout | base64
+```
+
+**On a new machine:** Decode the key and unlock:
+
+```bash
+echo "<pasted string>" | base64 -d > /tmp/git-crypt-key
+git-crypt unlock /tmp/git-crypt-key
+rm /tmp/git-crypt-key
+```
 
 ## Configuration
 
