@@ -207,3 +207,23 @@ func TestHandleCommentSubmitPostNotFound(t *testing.T) {
 		t.Fatalf("status = %d, want %d", w.Code, http.StatusNotFound)
 	}
 }
+
+func TestHandleCommentSubmitPrivatePost(t *testing.T) {
+	app := testApp(t)
+
+	form := url.Values{
+		"author": {"Alice"},
+		"body":   {"Comment on private post"},
+	}
+	req := httptest.NewRequest("POST", "/posts/private-post/comments", strings.NewReader(form.Encode()))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.SetPathValue("slug", "private-post")
+	req.RemoteAddr = "127.0.0.1:12345"
+	w := httptest.NewRecorder()
+
+	app.handleCommentSubmit(w, req)
+
+	if w.Code != http.StatusNotFound {
+		t.Fatalf("status = %d, want %d (comments blocked on private posts)", w.Code, http.StatusNotFound)
+	}
+}

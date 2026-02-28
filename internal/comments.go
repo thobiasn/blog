@@ -62,11 +62,7 @@ func (app *App) handleCommentSubmit(w http.ResponseWriter, r *http.Request) {
 	post, postExists := findPost(app.posts, slug)
 	app.mu.RUnlock()
 
-	if !postExists {
-		http.Error(w, "post not found", http.StatusNotFound)
-		return
-	}
-	if !app.cfg.isLocal() && post.Private {
+	if !postExists || post.Private {
 		http.Error(w, "post not found", http.StatusNotFound)
 		return
 	}

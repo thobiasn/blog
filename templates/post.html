@@ -24,6 +24,7 @@
     </div>
 </article>
 
+{{if not .Post.Private}}
 <section class="comments" id="comments">
     <h2>Comments</h2>
     {{range .Comments}}
@@ -50,4 +51,5 @@
         <button type="submit">Submit</button>
     </form>
 </section>
+{{end}}
 {{end}}
