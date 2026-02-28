@@ -11,8 +11,7 @@
 <ul class="post-list">
     {{range .Posts}}
     <li>
-        <a href="/posts/{{.Slug}}">{{.Title}}</a>
-        {{if .Private}}<span class="private-badge">private</span>{{end}}
+        <span class="post-title">{{if .Private}}<span class="private-badge">private</span> {{end}}<a href="/posts/{{.Slug}}">{{.Title}}</a></span>
         <time datetime="{{shortDate .Date}}">{{formatDate .Date}}</time>
         {{if .Description}}<p>{{.Description}}</p>{{end}}
         {{if .Tags}}
