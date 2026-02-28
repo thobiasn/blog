@@ -141,7 +141,7 @@ nav {
     gap: 0.25rem;
 }
 
-.post-list li a {
+.post-list li > a {
     font-size: 1.1rem;
     font-weight: 600;
 }
