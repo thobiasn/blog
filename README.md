@@ -66,9 +66,28 @@ Your post content here.
 
 **Status values:** `public` (listed everywhere), `draft` (visible locally only).
 
-**Private posts:** Install [git-crypt](https://github.com/AGWA/git-crypt) and unlock the repo to read/write private posts. Without the key, the server skips them.
+## Private Posts
 
-**Back up the key:** The git-crypt key lives only in your local `.git/` directory. If you lose it, encrypted posts in the remote repo are unrecoverable. Export a backup with `git-crypt export-key ~/path/to/backup` and store it somewhere safe (e.g., password manager).
+Private posts in `content/private/` are transparently encrypted by [git-crypt](https://github.com/AGWA/git-crypt). They're plaintext locally and encrypted in the remote repo. The server skips them if it doesn't have the key.
+
+**Setup:**
+
+```bash
+brew install git-crypt   # or your package manager
+git-crypt init
+```
+
+Add a `.gitattributes` file to define what gets encrypted:
+
+```
+content/private/** filter=git-crypt diff=git-crypt
+```
+
+Then write private posts normally — git-crypt encrypts on push and decrypts on pull.
+
+**On a new machine:** Copy the key or run `git-crypt unlock /path/to/exported-key`.
+
+**Back up the key:** The key lives only in your local `.git/` directory. If you lose it, encrypted posts in the remote repo are unrecoverable. Export a backup with `git-crypt export-key ~/path/to/backup` and store it somewhere safe (e.g., password manager).
 
 ## Configuration
 
