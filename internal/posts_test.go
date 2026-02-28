@@ -241,3 +241,60 @@ func TestHandlePostPrivateVisibleLocally(t *testing.T) {
 		t.Error("private post should be visible locally")
 	}
 }
+
+func TestPrivatePosts(t *testing.T) {
+	posts := []Post{
+		{Slug: "public-1", Private: false},
+		{Slug: "private-1", Private: true},
+		{Slug: "public-2", Private: false},
+		{Slug: "private-2", Private: true},
+	}
+
+	got := privatePosts(posts)
+	if len(got) != 2 {
+		t.Fatalf("privatePosts() returned %d posts, want 2", len(got))
+	}
+	if got[0].Slug != "private-1" || got[1].Slug != "private-2" {
+		t.Errorf("privatePosts() = %v, want private-1 and private-2", got)
+	}
+
+	got = privatePosts(nil)
+	if got != nil {
+		t.Errorf("privatePosts(nil) = %v, want nil", got)
+	}
+}
+
+func TestHandleJournal(t *testing.T) {
+	app := testApp(t)
+	// testApp has BaseURL = localhost, so isLocal() is true
+
+	req := httptest.NewRequest("GET", "/journal", nil)
+	w := httptest.NewRecorder()
+
+	app.handleJournal(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", w.Code, http.StatusOK)
+	}
+	body := w.Body.String()
+	if !strings.Contains(body, "Private Post") {
+		t.Error("journal should contain 'Private Post'")
+	}
+	if strings.Contains(body, "First Post") {
+		t.Error("journal should not contain public 'First Post'")
+	}
+}
+
+func TestHandleJournalHiddenInProd(t *testing.T) {
+	app := testApp(t)
+	app.cfg.BaseURL = "https://thobiasn.dev"
+
+	req := httptest.NewRequest("GET", "/journal", nil)
+	w := httptest.NewRecorder()
+
+	app.handleJournal(w, req)
+
+	if w.Code != http.StatusNotFound {
+		t.Fatalf("status = %d, want %d (journal hidden in prod)", w.Code, http.StatusNotFound)
+	}
+}

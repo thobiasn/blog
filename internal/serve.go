@@ -53,7 +53,7 @@ func Serve() {
 		db:        db,
 		md:        md,
 		chromaCSS: chromaCSS,
-		tmpls:     parseTemplates(),
+		tmpls:     parseTemplates(cfg),
 		limiter:   newRateLimiter(),
 	}
 
@@ -69,6 +69,7 @@ func Serve() {
 	mux.HandleFunc("POST /posts/{slug}/comments", app.handleCommentSubmit)
 	mux.HandleFunc("GET /projects", app.handleProjectList)
 	mux.HandleFunc("GET /projects/{slug}", app.handleProject)
+	mux.HandleFunc("GET /journal", app.handleJournal)
 	mux.HandleFunc("GET /search", app.handleSearch)
 	mux.HandleFunc("GET /rss.xml", app.handleRSS)
 	mux.HandleFunc("GET /subscribe", app.handleSubscribeForm)
@@ -133,7 +134,7 @@ func Serve() {
 	}
 }
 
-func parseTemplates() map[string]*template.Template {
+func parseTemplates(cfg Config) map[string]*template.Template {
 	funcMap := template.FuncMap{
 		"formatDate": func(t time.Time) string {
 			return t.Format("January 2, 2006")
@@ -141,9 +142,10 @@ func parseTemplates() map[string]*template.Template {
 		"shortDate": func(t time.Time) string {
 			return t.Format("2006-01-02")
 		},
+		"isLocal": cfg.isLocal,
 	}
 
-	names := []string{"home", "post", "post_list", "page", "project", "project_list", "subscribe", "search", "404"}
+	names := []string{"home", "post", "post_list", "journal", "page", "project", "project_list", "subscribe", "search", "404"}
 	tmpls := make(map[string]*template.Template, len(names))
 	for _, name := range names {
 		tmpls[name] = template.Must(

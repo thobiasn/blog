@@ -22,6 +22,22 @@
 </section>
 {{end}}
 
+{{if .JournalPosts}}
+<section class="recent-posts">
+    <h2>Recent journal entries</h2>
+    <ul class="post-list">
+        {{range .JournalPosts}}
+        <li>
+            <a href="/posts/{{.Slug}}">{{.Title}}</a>
+            <time datetime="{{shortDate .Date}}">{{formatDate .Date}}</time>
+            {{if .Description}}<p>{{.Description}}</p>{{end}}
+        </li>
+        {{end}}
+    </ul>
+    <p><a href="/journal">All entries &rarr;</a></p>
+</section>
+{{end}}
+
 {{if .Projects}}
 <section class="featured-projects">
     <h2>Projects</h2>

@@ -5,6 +5,7 @@ import "net/http"
 func (app *App) handleHome(w http.ResponseWriter, r *http.Request) {
 	app.mu.RLock()
 	posts := publicPosts(app.posts)
+	journal := privatePosts(app.posts)
 	featured := featuredProjects(app.projects)
 	app.mu.RUnlock()
 
@@ -13,9 +14,34 @@ func (app *App) handleHome(w http.ResponseWriter, r *http.Request) {
 		limit = len(posts)
 	}
 
-	app.render(w, "home", map[string]any{
+	data := map[string]any{
 		"Posts":    posts[:limit],
 		"Projects": featured,
+	}
+
+	if app.cfg.isLocal() {
+		jLimit := 5
+		if len(journal) < jLimit {
+			jLimit = len(journal)
+		}
+		data["JournalPosts"] = journal[:jLimit]
+	}
+
+	app.render(w, "home", data)
+}
+
+func (app *App) handleJournal(w http.ResponseWriter, r *http.Request) {
+	if !app.cfg.isLocal() {
+		app.renderNotFound(w, r)
+		return
+	}
+
+	app.mu.RLock()
+	posts := privatePosts(app.posts)
+	app.mu.RUnlock()
+
+	app.render(w, "journal", map[string]any{
+		"Posts": posts,
 	})
 }
 
@@ -60,6 +86,16 @@ func (app *App) handlePost(w http.ResponseWriter, r *http.Request) {
 		"Comments": comments,
 		"BaseURL":  app.cfg.BaseURL,
 	})
+}
+
+func privatePosts(posts []Post) []Post {
+	var out []Post
+	for _, p := range posts {
+		if p.Private {
+			out = append(out, p)
+		}
+	}
+	return out
 }
 
 func publicPosts(posts []Post) []Post {

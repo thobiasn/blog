@@ -1,0 +1,19 @@
+{{define "title"}}Journal - thobiasn.dev{{end}}
+
+{{define "content"}}
+<h1>Journal</h1>
+
+{{if .Posts}}
+<ul class="post-list">
+    {{range .Posts}}
+    <li>
+        <a href="/posts/{{.Slug}}">{{.Title}}</a>
+        <time datetime="{{shortDate .Date}}">{{formatDate .Date}}</time>
+        {{if .Description}}<p>{{.Description}}</p>{{end}}
+    </li>
+    {{end}}
+</ul>
+{{else}}
+<p>No journal entries yet.</p>
+{{end}}
+{{end}}
