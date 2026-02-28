@@ -18,7 +18,7 @@ COPY templates/ ./templates/
 COPY static/ ./static/
 COPY litestream.yml /etc/litestream.yml
 COPY entrypoint.sh .
-RUN chown -R blog:blog /app
+RUN mkdir -p /app/data && chown -R blog:blog /app
 USER blog
 EXPOSE 8080
 ENTRYPOINT ["./entrypoint.sh"]
