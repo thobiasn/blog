@@ -69,8 +69,7 @@ func Serve() {
 	mux.HandleFunc("POST /posts/{slug}/comments", app.handleCommentSubmit)
 	mux.HandleFunc("GET /projects", app.handleProjectList)
 	mux.HandleFunc("GET /projects/{slug}", app.handleProject)
-	mux.HandleFunc("GET /journal", app.handleJournal)
-	mux.HandleFunc("GET /search", app.handleSearch)
+mux.HandleFunc("GET /search", app.handleSearch)
 	mux.HandleFunc("GET /rss.xml", app.handleRSS)
 	mux.HandleFunc("GET /subscribe", app.handleSubscribeForm)
 	mux.HandleFunc("POST /subscribe", app.handleSubscribe)
@@ -145,7 +144,7 @@ func parseTemplates(cfg Config) map[string]*template.Template {
 		"isLocal": cfg.isLocal,
 	}
 
-	names := []string{"home", "post", "post_list", "journal", "page", "project", "project_list", "subscribe", "search", "404"}
+	names := []string{"home", "post", "post_list", "page", "project", "project_list", "subscribe", "search", "404"}
 	tmpls := make(map[string]*template.Template, len(names))
 	for _, name := range names {
 		tmpls[name] = template.Must(

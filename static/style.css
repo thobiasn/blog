@@ -333,7 +333,8 @@ h4:hover .anchor {
     font-size: 0.9rem;
 }
 
-.status-badge {
+.status-badge,
+.private-badge {
     font-size: 0.8rem;
     color: var(--text-secondary);
 }

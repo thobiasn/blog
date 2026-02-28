@@ -4,8 +4,7 @@ import "net/http"
 
 func (app *App) handleHome(w http.ResponseWriter, r *http.Request) {
 	app.mu.RLock()
-	posts := publicPosts(app.posts)
-	journal := privatePosts(app.posts)
+	posts := app.visiblePosts()
 	featured := featuredProjects(app.projects)
 	app.mu.RUnlock()
 
@@ -14,40 +13,15 @@ func (app *App) handleHome(w http.ResponseWriter, r *http.Request) {
 		limit = len(posts)
 	}
 
-	data := map[string]any{
+	app.render(w, "home", map[string]any{
 		"Posts":    posts[:limit],
 		"Projects": featured,
-	}
-
-	if app.cfg.isLocal() {
-		jLimit := 5
-		if len(journal) < jLimit {
-			jLimit = len(journal)
-		}
-		data["JournalPosts"] = journal[:jLimit]
-	}
-
-	app.render(w, "home", data)
-}
-
-func (app *App) handleJournal(w http.ResponseWriter, r *http.Request) {
-	if !app.cfg.isLocal() {
-		app.renderNotFound(w, r)
-		return
-	}
-
-	app.mu.RLock()
-	posts := privatePosts(app.posts)
-	app.mu.RUnlock()
-
-	app.render(w, "journal", map[string]any{
-		"Posts": posts,
 	})
 }
 
 func (app *App) handlePostList(w http.ResponseWriter, r *http.Request) {
 	app.mu.RLock()
-	posts := publicPosts(app.posts)
+	posts := app.visiblePosts()
 	app.mu.RUnlock()
 
 	tag := r.URL.Query().Get("tag")
@@ -88,16 +62,6 @@ func (app *App) handlePost(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func privatePosts(posts []Post) []Post {
-	var out []Post
-	for _, p := range posts {
-		if p.Private {
-			out = append(out, p)
-		}
-	}
-	return out
-}
-
 func publicPosts(posts []Post) []Post {
 	var out []Post
 	for _, p := range posts {
@@ -119,6 +83,13 @@ func filterByTag(posts []Post, tag string) []Post {
 		}
 	}
 	return out
+}
+
+func (app *App) visiblePosts() []Post {
+	if app.cfg.isLocal() {
+		return app.posts
+	}
+	return publicPosts(app.posts)
 }
 
 func findPost(posts []Post, slug string) (Post, bool) {

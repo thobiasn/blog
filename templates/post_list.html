@@ -12,6 +12,7 @@
     {{range .Posts}}
     <li>
         <a href="/posts/{{.Slug}}">{{.Title}}</a>
+        {{if .Private}}<span class="private-badge">private</span>{{end}}
         <time datetime="{{shortDate .Date}}">{{formatDate .Date}}</time>
         {{if .Description}}<p>{{.Description}}</p>{{end}}
         {{if .Tags}}

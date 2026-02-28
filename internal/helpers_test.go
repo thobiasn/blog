@@ -89,7 +89,7 @@ func testTemplates(t *testing.T) map[string]*template.Template {
 	}
 
 	base := filepath.Join("..", "templates")
-	names := []string{"home", "post", "post_list", "journal", "page", "project", "project_list", "subscribe", "search", "404"}
+	names := []string{"home", "post", "post_list", "page", "project", "project_list", "subscribe", "search", "404"}
 	tmpls := make(map[string]*template.Template, len(names))
 	for _, name := range names {
 		tmpl, err := template.New("base.html").Funcs(funcMap).ParseFiles(

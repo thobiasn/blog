@@ -6,22 +6,6 @@
     <p>I write about software, systems, and things I find interesting.</p>
 </section>
 
-{{if .JournalPosts}}
-<section class="recent-posts">
-    <h2>Recent journal entries</h2>
-    <ul class="post-list">
-        {{range .JournalPosts}}
-        <li>
-            <a href="/posts/{{.Slug}}">{{.Title}}</a>
-            <time datetime="{{shortDate .Date}}">{{formatDate .Date}}</time>
-            {{if .Description}}<p>{{.Description}}</p>{{end}}
-        </li>
-        {{end}}
-    </ul>
-    <p><a href="/journal">All entries &rarr;</a></p>
-</section>
-{{end}}
-
 {{if .Posts}}
 <section class="recent-posts">
     <h2>Recent posts</h2>
@@ -29,6 +13,7 @@
         {{range .Posts}}
         <li>
             <a href="/posts/{{.Slug}}">{{.Title}}</a>
+            {{if .Private}}<span class="private-badge">private</span>{{end}}
             <time datetime="{{shortDate .Date}}">{{formatDate .Date}}</time>
             {{if .Description}}<p>{{.Description}}</p>{{end}}
         </li>
