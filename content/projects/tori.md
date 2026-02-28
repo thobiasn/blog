@@ -10,6 +10,8 @@ A single binary and an SSH connection — metrics, logs, and alerts for your Doc
 
 I built tori because I wanted to monitor a few Docker servers without deploying an entire observability platform. It connects over SSH, reads from `/proc` and the Docker socket, and gives you a terminal dashboard.
 
+![tori dashboard](/images/tori-tokyo-night.png)
+
 ## How it works
 
 tori is a single binary split into two roles — an **agent** that runs on each server and a **client** that runs on your machine. The agent collects host metrics and container stats, stores them in SQLite, and exposes a Unix socket. The client SSH-tunnels to that socket and renders everything in a TUI.
@@ -35,6 +37,14 @@ Most monitoring tools add attack surface — dashboards, APIs, auth layers, open
 - SQLite for metric storage (configurable retention, 7 day default)
 - Agent typically uses under 50 MB RAM
 - Linux, macOS, Windows (WSL)
+
+## Themes
+
+tori uses ANSI colors by default, so it automatically matches whatever terminal theme you're already running. If you want something different, every color is overridable in the config via 256-color or hex values.
+
+![tori osaka jade theme](/images/tori-osaka-jade.png)
+
+![tori rosé pine theme](/images/tori-rose-pine.png)
 
 ## Links
 
