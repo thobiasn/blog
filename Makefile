@@ -1,7 +1,7 @@
 .PHONY: dev build test clean install
 
 dev:
-	go run ./cmd/blog serve
+	find content templates -name '*.md' -o -name '*.html' | entr -r go run ./cmd/blog serve
 
 build:
 	go build -o blog ./cmd/blog
