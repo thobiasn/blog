@@ -68,6 +68,8 @@ Your post content here.
 
 **Private posts:** Install [git-crypt](https://github.com/AGWA/git-crypt) and unlock the repo to read/write private posts. Without the key, the server skips them.
 
+**Back up the key:** The git-crypt key lives only in your local `.git/` directory. If you lose it, encrypted posts in the remote repo are unrecoverable. Export a backup with `git-crypt export-key ~/path/to/backup` and store it somewhere safe (e.g., password manager).
+
 ## Configuration
 
 All config via environment variables. See `.env.example` for the full list.
