@@ -47,8 +47,8 @@ func (app *App) handlePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// In production, only show public non-private posts
-	if !app.cfg.isLocal() && (post.Status != "public" || post.Private) {
+	// In production, only show public posts
+	if !app.cfg.isLocal() && post.Private {
 		app.renderNotFound(w, r)
 		return
 	}
@@ -65,7 +65,7 @@ func (app *App) handlePost(w http.ResponseWriter, r *http.Request) {
 func publicPosts(posts []Post) []Post {
 	var out []Post
 	for _, p := range posts {
-		if p.Status == "public" && !p.Private {
+		if !p.Private {
 			out = append(out, p)
 		}
 	}

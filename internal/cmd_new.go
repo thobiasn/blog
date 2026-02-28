@@ -28,37 +28,23 @@ func New(args []string) {
 }
 
 func newPost(args []string) {
-	private := false
-	title := ""
-
-	for _, a := range args {
-		if a == "--private" {
-			private = true
-		} else {
-			title = a
-		}
-	}
-
-	if title == "" {
-		fmt.Fprintln(os.Stderr, "usage: blog new post [--private] <title>")
+	if len(args) < 1 {
+		fmt.Fprintln(os.Stderr, "usage: blog new post <title>")
 		os.Exit(1)
 	}
 
+	title := args[0]
 	slug := slugify(title)
 	date := time.Now().Format("2006-01-02")
 	filename := fmt.Sprintf("%s-%s.md", date, slug)
 
-	dir := filepath.Join("content", "posts")
-	if private {
-		dir = filepath.Join("content", "private")
-	}
+	dir := filepath.Join("content", "private")
 	os.MkdirAll(dir, 0o755)
 
 	path := filepath.Join(dir, filename)
 	content := fmt.Sprintf(`---
 title: %q
 date: %s
-status: draft
 tags: []
 description: ""
 ---

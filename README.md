@@ -5,8 +5,7 @@ A personal blog, diary, and portfolio. Single Go binary, SQLite, markdown files 
 ## Features
 
 - Markdown posts with YAML frontmatter, rendered server-side with syntax highlighting
-- Private/diary posts encrypted at rest via git-crypt
-- Draft posts visible locally, hidden in production
+- Private/diary posts encrypted at rest via git-crypt (visible locally, hidden in production)
 - Full-text search (SQLite FTS5)
 - RSS feed
 - Email subscribers with auto-notify on new posts
@@ -30,8 +29,9 @@ go run ./cmd/blog serve
 
 ```
 blog serve                          start HTTP server
-blog new post [--private] <title>   create a new post
+blog new post <title>               create a new post (in content/private/)
 blog new project <name>             create a new project
+blog publish <slug>                 move post from private to public
 blog dash                           admin dashboard
 blog comments                       list recent comments
 blog comments delete <id>           delete a comment
@@ -50,7 +50,6 @@ Posts are markdown files with YAML frontmatter:
 title: Hello World
 date: 2026-02-25
 tags: [blog, go]
-status: public
 description: A short description for previews and OG tags.
 ---
 
@@ -64,7 +63,7 @@ Your post content here.
 | `content/projects/` | Project pages |
 | `content/pages/` | Static pages (uses, now) |
 
-**Status values:** `public` (listed everywhere), `draft` (visible locally only).
+New posts are created in `content/private/` and moved to `content/posts/` with `blog publish <slug>`.
 
 ## Private Posts
 

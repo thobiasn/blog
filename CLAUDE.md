@@ -47,6 +47,7 @@ internal/            # all application code (package blog)
   deploy.go          # webhook: git pull + reload
   db.go              # SQLite init + migrations
   cmd_new.go         # CLI: blog new post/project
+  cmd_publish.go     # CLI: blog publish <slug>
   cmd_admin.go       # CLI: blog comments, blog subscribers, blog (dashboard)
 content/             # markdown content
   posts/             # public posts
@@ -62,10 +63,10 @@ All application code lives in `internal/` as `package blog`. The `cmd/blog/main.
 
 ## Key Concepts
 
-- **Post types:** public (`content/posts/`), private (`content/private/`), draft (`status: draft` in frontmatter)
+- **Post types:** public (`content/posts/`), private (`content/private/`) — directory is the status, no frontmatter field needed
 - **Encryption is transparent** — git-crypt encrypts `content/private/` in git, plaintext locally. No application-level encryption code needed
 - **Server without git-crypt key** skips private posts (they're binary blobs). With the key (local dev), all posts render
-- **Drafts** excluded from public listings, visible when running locally
+- **Workflow:** new posts start in `content/private/`, publish with `blog publish <slug>` to move to `content/posts/`
 - **No web auth** — admin tasks handled via CLI against the remote server's API
 - **Content loaded at startup** into memory. `Reload()` called by deploy webhook and `SIGHUP`
 - **Auto-notify:** on content reload, new public posts automatically trigger subscriber emails
@@ -79,9 +80,9 @@ All application code lives in `internal/` as `package blog`. The `cmd/blog/main.
 go run ./cmd/blog serve                 # start HTTP server
 
 # Content creation
-go run ./cmd/blog new post "Title"              # create in content/posts/
-go run ./cmd/blog new post --private "Title"    # create in content/private/
+go run ./cmd/blog new post "Title"              # create in content/private/
 go run ./cmd/blog new project "Name"            # create in content/projects/
+go run ./cmd/blog publish <slug>                # move from content/private/ to content/posts/
 
 # Admin (uses BLOG_URL + ADMIN_API_KEY env vars)
 go run ./cmd/blog                       # dashboard overview
@@ -96,7 +97,7 @@ go run ./cmd/blog subscribers           # subscriber stats
 ## Development
 
 ```bash
-go run ./cmd/blog serve     # run locally on :8080 (shows all posts including private/draft)
+go run ./cmd/blog serve     # run locally on :8080 (shows all posts including private)
 go test ./...               # run all tests
 ```
 

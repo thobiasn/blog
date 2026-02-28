@@ -10,10 +10,9 @@ import (
 
 func TestPublicPosts(t *testing.T) {
 	posts := []Post{
-		{Slug: "public-1", Status: "public", Private: false},
-		{Slug: "draft-1", Status: "draft", Private: false},
-		{Slug: "private-1", Status: "public", Private: true},
-		{Slug: "public-2", Status: "public", Private: false},
+		{Slug: "public-1", Private: false},
+		{Slug: "private-1", Private: true},
+		{Slug: "public-2", Private: false},
 	}
 
 	got := publicPosts(posts)
@@ -156,10 +155,7 @@ func TestHandlePostList(t *testing.T) {
 	if !strings.Contains(body, "First Post") {
 		t.Error("post list should contain 'First Post'")
 	}
-	// Draft and private should not appear in public listing
-	if strings.Contains(body, "Draft Post") {
-		t.Error("post list should not contain draft post")
-	}
+	// Private should not appear in public listing
 	if strings.Contains(body, "Private Post") {
 		t.Error("post list should not contain private post")
 	}
@@ -213,39 +209,6 @@ func TestHandlePostNotFound(t *testing.T) {
 	}
 }
 
-func TestHandlePostDraftHidden(t *testing.T) {
-	app := testApp(t)
-	app.cfg.BaseURL = "https://thobiasn.dev"
-
-	req := httptest.NewRequest("GET", "/posts/draft-post", nil)
-	req.SetPathValue("slug", "draft-post")
-	w := httptest.NewRecorder()
-
-	app.handlePost(w, req)
-
-	if w.Code != http.StatusNotFound {
-		t.Fatalf("status = %d, want %d (draft hidden in prod)", w.Code, http.StatusNotFound)
-	}
-}
-
-func TestHandlePostDraftVisibleLocally(t *testing.T) {
-	app := testApp(t)
-	// BaseURL defaults to localhost in testApp
-
-	req := httptest.NewRequest("GET", "/posts/draft-post", nil)
-	req.SetPathValue("slug", "draft-post")
-	w := httptest.NewRecorder()
-
-	app.handlePost(w, req)
-
-	if w.Code != http.StatusOK {
-		t.Fatalf("status = %d, want %d (draft visible locally)", w.Code, http.StatusOK)
-	}
-	if !strings.Contains(w.Body.String(), "Draft Post") {
-		t.Error("draft post should be visible locally")
-	}
-}
-
 func TestHandlePostPrivateHidden(t *testing.T) {
 	app := testApp(t)
 	app.cfg.BaseURL = "https://thobiasn.dev"
@@ -258,5 +221,23 @@ func TestHandlePostPrivateHidden(t *testing.T) {
 
 	if w.Code != http.StatusNotFound {
 		t.Fatalf("status = %d, want %d (private hidden in prod)", w.Code, http.StatusNotFound)
+	}
+}
+
+func TestHandlePostPrivateVisibleLocally(t *testing.T) {
+	app := testApp(t)
+	// BaseURL defaults to localhost in testApp
+
+	req := httptest.NewRequest("GET", "/posts/private-post", nil)
+	req.SetPathValue("slug", "private-post")
+	w := httptest.NewRecorder()
+
+	app.handlePost(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d (private visible locally)", w.Code, http.StatusOK)
+	}
+	if !strings.Contains(w.Body.String(), "Private Post") {
+		t.Error("private post should be visible locally")
 	}
 }

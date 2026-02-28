@@ -39,7 +39,6 @@ func Dashboard() {
 	fmt.Println("Blog Dashboard")
 	fmt.Println("──────────────")
 	fmt.Printf("Public posts:  %d\n", stats.PublicPosts)
-	fmt.Printf("Draft posts:   %d\n", stats.DraftPosts)
 	fmt.Printf("Private posts: %d\n", stats.PrivatePosts)
 	fmt.Printf("Comments:      %d\n", stats.Comments)
 	fmt.Printf("Subscribers:   %d\n", stats.Subscribers)

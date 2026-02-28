@@ -145,7 +145,7 @@ func featuredProjects(projects []Project) []Project {
 func relatedPosts(posts []Post, projectSlug string) []Post {
 	var out []Post
 	for _, p := range posts {
-		if p.Project == projectSlug && p.Status == "public" && !p.Private {
+		if p.Project == projectSlug && !p.Private {
 			out = append(out, p)
 		}
 	}

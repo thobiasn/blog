@@ -2,7 +2,6 @@
 title: Hello World
 date: 2026-02-25
 tags: [blog, go]
-status: public
 description: The first post on thobiasn.dev.
 ---
 

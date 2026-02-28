@@ -66,7 +66,7 @@ func (app *App) handleCommentSubmit(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "post not found", http.StatusNotFound)
 		return
 	}
-	if !app.cfg.isLocal() && (post.Status != "public" || post.Private) {
+	if !app.cfg.isLocal() && post.Private {
 		http.Error(w, "post not found", http.StatusNotFound)
 		return
 	}

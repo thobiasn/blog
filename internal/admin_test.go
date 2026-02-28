@@ -121,9 +121,6 @@ func TestHandleAdminStats(t *testing.T) {
 	if stats.PublicPosts != 1 {
 		t.Errorf("PublicPosts = %d, want 1", stats.PublicPosts)
 	}
-	if stats.DraftPosts != 1 {
-		t.Errorf("DraftPosts = %d, want 1", stats.DraftPosts)
-	}
 	if stats.PrivatePosts != 1 {
 		t.Errorf("PrivatePosts = %d, want 1", stats.PrivatePosts)
 	}

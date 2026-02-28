@@ -30,9 +30,6 @@ func TestHandleRSS(t *testing.T) {
 	if !strings.Contains(body, "<title>First Post</title>") {
 		t.Error("missing public post")
 	}
-	if strings.Contains(body, "Draft Post") {
-		t.Error("draft post should not appear in RSS")
-	}
 	if strings.Contains(body, "Private Post") {
 		t.Error("private post should not appear in RSS")
 	}

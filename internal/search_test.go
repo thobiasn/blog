@@ -95,20 +95,13 @@ func TestHandleSearch(t *testing.T) {
 	})
 }
 
-func TestHandleSearchExcludesPrivateAndDraft(t *testing.T) {
+func TestHandleSearchExcludesPrivate(t *testing.T) {
 	app := testApp(t)
 	// Only public posts are indexed
 	rebuildSearchIndex(app.db, publicPosts(app.posts), app.projects)
 
-	r := httptest.NewRequest("GET", "/search?q=Draft", nil)
+	r := httptest.NewRequest("GET", "/search?q=Private", nil)
 	w := httptest.NewRecorder()
-	app.handleSearch(w, r)
-	if strings.Contains(w.Body.String(), "Draft Post") {
-		t.Error("draft post should not appear in search results")
-	}
-
-	r = httptest.NewRequest("GET", "/search?q=Private", nil)
-	w = httptest.NewRecorder()
 	app.handleSearch(w, r)
 	if strings.Contains(w.Body.String(), "Private Post") {
 		t.Error("private post should not appear in search results")

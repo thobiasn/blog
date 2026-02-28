@@ -30,7 +30,6 @@ func (app *App) requireAdmin(next http.HandlerFunc) http.HandlerFunc {
 
 type adminStats struct {
 	PublicPosts  int `json:"public_posts"`
-	DraftPosts   int `json:"draft_posts"`
 	PrivatePosts int `json:"private_posts"`
 	Comments     int `json:"comments"`
 	Subscribers  int `json:"subscribers"`
@@ -43,12 +42,9 @@ func (app *App) handleAdminStats(w http.ResponseWriter, r *http.Request) {
 
 	stats := adminStats{}
 	for _, p := range posts {
-		switch {
-		case p.Private:
+		if p.Private {
 			stats.PrivatePosts++
-		case p.Status == "draft":
-			stats.DraftPosts++
-		default:
+		} else {
 			stats.PublicPosts++
 		}
 	}

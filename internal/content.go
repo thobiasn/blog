@@ -26,7 +26,6 @@ type Post struct {
 	Title       string
 	Slug        string
 	Description string
-	Status      string
 	Project     string
 	Private     bool
 	Date        time.Time
@@ -44,7 +43,6 @@ type postFrontmatter struct {
 	Title       string   `yaml:"title"`
 	Date        string   `yaml:"date"`
 	Tags        []string `yaml:"tags"`
-	Status      string   `yaml:"status"`
 	Description string   `yaml:"description"`
 	Project     string   `yaml:"project"`
 }
@@ -146,16 +144,11 @@ func parsePost(path string, md goldmark.Markdown) (Post, error) {
 
 	date, _ := time.Parse("2006-01-02", meta.Date)
 	slug := postSlug(filepath.Base(path))
-	status := meta.Status
-	if status == "" {
-		status = "public"
-	}
 
 	return Post{
 		Title:       meta.Title,
 		Slug:        slug,
 		Description: meta.Description,
-		Status:      status,
 		Project:     meta.Project,
 		Date:        date,
 		Tags:        meta.Tags,

@@ -60,9 +60,6 @@ Hello **world**.
 	if post.Description != "A test post" {
 		t.Errorf("Description = %q, want %q", post.Description, "A test post")
 	}
-	if post.Status != "public" {
-		t.Errorf("Status = %q, want %q", post.Status, "public")
-	}
 	if post.Project != "blog" {
 		t.Errorf("Project = %q, want %q", post.Project, "blog")
 	}
@@ -71,29 +68,6 @@ Hello **world**.
 	}
 	if !strings.Contains(string(post.Body), "<strong>world</strong>") {
 		t.Errorf("Body should contain rendered markdown, got %q", post.Body)
-	}
-}
-
-func TestParsePostDefaultStatus(t *testing.T) {
-	dir := t.TempDir()
-	content := `---
-title: No Status
-date: 2026-01-01
----
-
-Content.
-`
-	path := filepath.Join(dir, "2026-01-01-no-status.md")
-	os.WriteFile(path, []byte(content), 0644)
-
-	md := newMarkdown()
-	post, err := parsePost(path, md)
-	if err != nil {
-		t.Fatalf("parsePost: %v", err)
-	}
-
-	if post.Status != "public" {
-		t.Errorf("Status = %q, want %q (default)", post.Status, "public")
 	}
 }
 

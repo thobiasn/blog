@@ -45,10 +45,9 @@ func TestFeaturedProjects(t *testing.T) {
 
 func TestRelatedPosts(t *testing.T) {
 	posts := []Post{
-		{Slug: "related", Project: "blog", Status: "public", Private: false},
-		{Slug: "draft-related", Project: "blog", Status: "draft", Private: false},
-		{Slug: "private-related", Project: "blog", Status: "public", Private: true},
-		{Slug: "unrelated", Project: "other", Status: "public", Private: false},
+		{Slug: "related", Project: "blog", Private: false},
+		{Slug: "private-related", Project: "blog", Private: true},
+		{Slug: "unrelated", Project: "other", Private: false},
 	}
 
 	got := relatedPosts(posts, "blog")

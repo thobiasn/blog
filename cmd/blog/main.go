@@ -11,8 +11,9 @@ const usage = `usage: blog <command>
 
 Commands:
   serve                          start HTTP server
-  new post [--private] <title>   create a new post
+  new post <title>               create a new post (in content/private/)
   new project <name>             create a new project
+  publish <slug>                 move post from private to public
   dash                           admin dashboard
   comments                       list recent comments
   comments delete <id>           delete a comment
@@ -31,6 +32,8 @@ func main() {
 		blog.Serve()
 	case "new":
 		blog.New(os.Args[2:])
+	case "publish":
+		blog.Publish(os.Args[2:])
 	case "dash":
 		blog.Dashboard()
 	case "comments":
