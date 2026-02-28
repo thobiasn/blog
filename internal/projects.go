@@ -19,7 +19,6 @@ type Project struct {
 	Slug        string
 	Description string
 	Repo        string
-	Status      string
 	Featured    bool
 	Tags        []string
 	Body        template.HTML
@@ -29,7 +28,6 @@ type projectFrontmatter struct {
 	Title       string   `yaml:"title"`
 	Description string   `yaml:"description"`
 	Repo        string   `yaml:"repo"`
-	Status      string   `yaml:"status"`
 	Featured    bool     `yaml:"featured"`
 	Tags        []string `yaml:"tags"`
 }
@@ -76,17 +74,12 @@ func parseProject(path string, md goldmark.Markdown) (Project, error) {
 	}
 
 	slug := strings.TrimSuffix(filepath.Base(path), ".md")
-	status := meta.Status
-	if status == "" {
-		status = "active"
-	}
 
 	return Project{
 		Title:       meta.Title,
 		Slug:        slug,
 		Description: meta.Description,
 		Repo:        meta.Repo,
-		Status:      status,
 		Featured:    meta.Featured,
 		Tags:        meta.Tags,
 		Body:        template.HTML(buf.String()),

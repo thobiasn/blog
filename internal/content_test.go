@@ -218,9 +218,6 @@ Project **description**.
 	if project.Slug != "my-project" {
 		t.Errorf("Slug = %q, want %q", project.Slug, "my-project")
 	}
-	if project.Status != "active" {
-		t.Errorf("Status = %q, want %q (default)", project.Status, "active")
-	}
 	if !project.Featured {
 		t.Error("Featured should be true")
 	}

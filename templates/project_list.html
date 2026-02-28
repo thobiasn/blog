@@ -8,8 +8,12 @@
     {{range .Projects}}
     <li>
         <a href="/projects/{{.Slug}}">{{.Title}}</a>
-        <span class="status-badge">{{.Status}}</span>
         {{if .Description}}<p>{{.Description}}</p>{{end}}
+        {{if .Tags}}
+        <div class="tags">
+            {{range .Tags}}<span class="tag">{{.}}</span>{{end}}
+        </div>
+        {{end}}
     </li>
     {{end}}
 </ul>

@@ -34,7 +34,6 @@
         {{range .Projects}}
         <li>
             <a href="/projects/{{.Slug}}">{{.Title}}</a>
-            <span class="status-badge">{{.Status}}</span>
             {{if .Description}}<p>{{.Description}}</p>{{end}}
         </li>
         {{end}}

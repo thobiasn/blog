@@ -7,10 +7,14 @@
 {{define "content"}}
 <article class="project">
     <header class="project-header">
-        <h1>{{.Project.Title}}</h1>
-        <span class="status-badge">{{.Project.Status}}</span>
-        {{if .Project.Repo}}
-        <a href="{{.Project.Repo}}" class="project-repo">Repository</a>
+        <div class="project-meta">
+            <h1>{{.Project.Title}}</h1>
+            {{if .Project.Repo}}<a href="{{.Project.Repo}}" class="project-repo">GitHub</a>{{end}}
+        </div>
+        {{if .Project.Tags}}
+        <div class="tags">
+            {{range .Project.Tags}}<span class="tag">{{.}}</span>{{end}}
+        </div>
         {{end}}
     </header>
     <div class="project-body">
