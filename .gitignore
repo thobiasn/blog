@@ -6,3 +6,4 @@ tmp/
 /blog
 docs/
 coverage.tmp
+.claude
