@@ -31,7 +31,7 @@ for "industry standards" where you might not even need it.
 
 When I set out to build this blog I had a few features I knew I wanted:
 
-* Markdown based posts
+* Public blog posts _(shocker)_
 * Private/Draft posts
 * Anonymous comments
 * Email subscribers
