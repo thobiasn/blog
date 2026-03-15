@@ -119,6 +119,6 @@ Subscribers:   1
 
 ### Just right
 
-Make the whole thing in go so we get a single binary with a low footprint (> 10mb of ram usage). The same binary I use locally to write the posts is the one deployed on the remote server. It's just the exact level of complexity needed, which is piss all for a simple private blog and its all in under 2000 lines of go code.
+Make the whole thing in go so we get a single binary with a low footprint (<10mb ram). The same binary I use locally to write the posts is the one deployed on the remote server, extremely easy to dockerize too. It's just the exact level of complexity needed, which is piss all for a simple private blog and its all in under 2000 lines of go code.
 
 It **feels** just right.
