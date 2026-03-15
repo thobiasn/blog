@@ -1,7 +1,7 @@
 ---
-title: "a pragmatic blog"
+title: "A Pragmatic Blog"
 date: 2026-03-15
-tags: []
+tags: [blog, go, pragmatism, git-crypt, cli]
 description: "Building this blog and the wonders of pragmatism"
 ---
 _Can we talk about my blog? I'm dying to talk about my blog._
