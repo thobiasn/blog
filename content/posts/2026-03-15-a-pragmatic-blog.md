@@ -53,7 +53,7 @@ but with way less code, less complexity and some hidden bonus advantages.
 
 ### Posts are just files
 
-How many posts am I really going to write? More than likely we are talking sub thousands, completely no reason to reach for a database for that. Instead posts can just be markdown files. Way simpler to reason about, less complexity around handling them **and** its comes with the added benefit of having all of my content backed up **free** of charge via my git provider. Githubs built in editor is perfectly fine for making changes or adjustments to posts too, if I ever did want to actually edit a page on the go, I can simply do it straight on github and continuous deployment takes care of publishing my changes.
+How many posts am I really going to write? More than likely we are talking sub thousands, completely no reason to reach for a database for that. Instead posts can just be markdown files. Way simpler to reason about, less complexity around handling them **and** it comes with the added benefit of having all of my content backed up **free** of charge via my git provider. Githubs built in editor is perfectly fine for making changes or adjustments to posts too, if I ever did want to actually edit a page on the go, I can simply do it straight on github and continuous deployment takes care of publishing my changes.
 
 ---
 
@@ -119,6 +119,6 @@ Subscribers:   1
 
 ### Just right
 
-Make the whole thing in go so we get a single binary with a low footprint (<10mb ram). The same binary I use locally to write the posts is the one deployed on the remote server, extremely easy to dockerize too. It's just the exact level of complexity needed, which is piss all for a simple private blog and its all in under 2000 lines of go code.
+Make the whole thing in go so we get a single binary with a low footprint (<10mb ram). The same binary I use locally to write the posts is the one deployed on the remote server, extremely easy to dockerize too. Server side rendered html with plain css, the page you're reading right now is less than 50kb. It's just the exact level of complexity needed, which is piss all for a simple private blog and its all in under 2000 lines of go code.
 
 It **feels** just right.
