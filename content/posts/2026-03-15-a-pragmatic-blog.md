@@ -45,6 +45,7 @@ Writing posts on the go? Of course! We'll just add the standard jwt web login so
 
 I've built things this way for so long now, why do I need a whole web login? Who is going to log in to this thing? It's just me, am I really going to be
 writing a blog post from my phone? _(I'm not)_ The more I thought about it the more the whole thing bugged me, so much complexity for something that should just be simple.
+
 In the end I went a whole different direction, completely public repo, no web login, no admin panel, no postgres _(still got a db though)_ and I still managed to get every feature I wanted
 but with way less code, less complexity and some hidden bonus advantages.
 
@@ -105,7 +106,8 @@ Commands:
 A few handy commands for writing locally, and a handy dashboard for a quick glance.
 
 ```
-Blog Dashboard
+❯Blog dash
+Dashboard
 ──────────────
 Public posts:  2
 Private posts: 1
@@ -117,6 +119,6 @@ Subscribers:   1
 
 ### Just right
 
-Make the whole thing in go so we get a single binary with a low footprint. The same binary I use locally to write the posts is the one deployed on the remote server. It's just the exact level of complexity needed, which is piss all for a simple private blog and its all in under 2000 lines of go code.
+Make the whole thing in go so we get a single binary with a low footprint (> 10mb of ram usage). The same binary I use locally to write the posts is the one deployed on the remote server. It's just the exact level of complexity needed, which is piss all for a simple private blog and its all in under 2000 lines of go code.
 
 It **feels** just right.
