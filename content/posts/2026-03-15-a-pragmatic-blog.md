@@ -108,7 +108,7 @@ Commands:
 A few handy commands for writing locally, and a handy dashboard for a quick glance.
 
 ```
-❯ Blog dash
+❯ ./blog dash
 Dashboard
 ──────────────
 Public posts:  2
