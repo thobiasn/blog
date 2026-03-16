@@ -69,7 +69,7 @@ I could just private it, but I dislike that for several reasons:
 
 _> How can we keep the repo public and have all of our hidden content as files?_
 
-Encryption! I did a bit of searching and found [git-crypt](https://github.com/AGWA/git-crypt) which uses gits native clean/smudge filters to run a command before commit/checkout. This automatically encrypts any posts placed in the `content/private/` folder in our `.git` blobs which means I don't have to manage it all and all posts are available in my editor, private or not but encrypted
+Encryption! I did a bit of searching and found [git-crypt](https://github.com/AGWA/git-crypt) which uses gits native clean/smudge filters to run a command before commit/checkout. This automatically encrypts any posts placed in the `content/private/` folder in our `.git` blobs which means I don't have to manage it at all and all posts are available in my editor, private or not but encrypted
 on any remote git server. Pulling on a fresh machine just requires me to set the encryption key in my git settings and run `git-crypt unlock`, all our posts are now decrypted. Hosted we simply run without the key set and only our public posts are available. It just **works**.
 
 _see it in action in the [public repo](https://github.com/thobiasn/blog/blob/main/content/private/2026-03-15-can-t-see-me.md)_
