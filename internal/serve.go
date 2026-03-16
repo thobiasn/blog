@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"database/sql"
+	"fmt"
 	"html/template"
 	"log"
 	"net"
@@ -142,6 +143,13 @@ func parseTemplates(cfg Config) map[string]*template.Template {
 			return t.Format("2006-01-02")
 		},
 		"isLocal": cfg.isLocal,
+		"readTime": func(d time.Duration) string {
+			m := int(d.Minutes())
+			if m < 1 {
+				return "1 min read"
+			}
+			return fmt.Sprintf("%d min read", m)
+		},
 	}
 
 	names := []string{"home", "post", "post_list", "page", "project", "project_list", "subscribe", "search", "404"}

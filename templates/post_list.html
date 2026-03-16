@@ -13,6 +13,7 @@
     <li>
         <span class="post-title">{{if .Private}}<span class="private-badge">private</span> {{end}}<a href="/posts/{{.Slug}}">{{.Title}}</a></span>
         <time datetime="{{shortDate .Date}}">{{formatDate .Date}}</time>
+        <span class="read-time">{{readTime .ReadTime}}</span>
         {{if .Description}}<p>{{.Description}}</p>{{end}}
         {{if .Tags}}
         <div class="tags">

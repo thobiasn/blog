@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestPostSlug(t *testing.T) {
@@ -188,6 +189,29 @@ My **tools**.
 	}
 	if !strings.Contains(string(page.Body), "<strong>tools</strong>") {
 		t.Errorf("Body should contain rendered markdown, got %q", page.Body)
+	}
+}
+
+func TestEstimatedReadTime(t *testing.T) {
+	tests := []struct {
+		name string
+		body string
+		want time.Duration
+	}{
+		{"empty", "", 0},
+		{"one word", "hello", 300 * time.Millisecond},
+		{"200 words", strings.Repeat("word ", 200), 1 * time.Minute},
+		{"1000 words", strings.Repeat("word ", 1000), 5 * time.Minute},
+		{"short post", "This is a short blog post with ten words here.", 3 * time.Second},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := estimatedReadTime([]byte(tt.body))
+			if got != tt.want {
+				t.Errorf("estimatedReadTime() = %v, want %v", got, tt.want)
+			}
+		})
 	}
 }
 

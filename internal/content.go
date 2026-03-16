@@ -30,6 +30,7 @@ type Post struct {
 	Private     bool
 	Date        time.Time
 	Tags        []string
+	ReadTime    time.Duration
 	Body        template.HTML
 }
 
@@ -144,6 +145,7 @@ func parsePost(path string, md goldmark.Markdown) (Post, error) {
 
 	date, _ := time.Parse("2006-01-02", meta.Date)
 	slug := postSlug(filepath.Base(path))
+	readTime := estimatedReadTime(src)
 
 	return Post{
 		Title:       meta.Title,
@@ -152,6 +154,7 @@ func parsePost(path string, md goldmark.Markdown) (Post, error) {
 		Project:     meta.Project,
 		Date:        date,
 		Tags:        meta.Tags,
+		ReadTime:    readTime,
 		Body:        template.HTML(buf.String()),
 	}, nil
 }
@@ -164,6 +167,13 @@ func postSlug(filename string) string {
 		name = name[11:]
 	}
 	return name
+}
+
+func estimatedReadTime(body []byte) time.Duration {
+	wpm := 200.0
+	words := len(bytes.Fields(body))
+	minutes := float64(words) / wpm
+	return time.Duration(minutes * float64(time.Minute))
 }
 
 func loadAllPages(dir string, md goldmark.Markdown) ([]Page, error) {

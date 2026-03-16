@@ -177,6 +177,16 @@ nav {
     color: var(--text-secondary);
 }
 
+.read-time {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.post-header .read-time::before {
+    content: "·";
+    margin: 0 0.4rem;
+}
+
 .post-body a,
 .project-body a,
 .page a {

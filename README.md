@@ -82,7 +82,7 @@ Add a `.gitattributes` file to define what gets encrypted:
 content/private/** filter=git-crypt diff=git-crypt
 ```
 
-Then write private posts normally — git-crypt encrypts on push and decrypts on pull.
+Then write private posts normally — git-crypt encrypts them transparently via smudge/clean filters (plaintext in your working directory, encrypted in the git object store).
 
 **Back up the key:** The key lives only in your local `.git/` directory. If you lose it, encrypted posts in the remote repo are unrecoverable. Export a base64-encoded copy for your password manager:
 

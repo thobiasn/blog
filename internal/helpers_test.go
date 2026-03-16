@@ -2,6 +2,7 @@ package blog
 
 import (
 	"database/sql"
+	"fmt"
 	"html/template"
 	"path/filepath"
 	"testing"
@@ -84,6 +85,13 @@ func testTemplates(t *testing.T) map[string]*template.Template {
 		"formatDate": func(t time.Time) string { return t.Format("January 2, 2006") },
 		"shortDate":  func(t time.Time) string { return t.Format("2006-01-02") },
 		"isLocal": func() bool { return true },
+		"readTime": func(d time.Duration) string {
+			m := int(d.Minutes())
+			if m < 1 {
+				return "1 min read"
+			}
+			return fmt.Sprintf("%d min read", m)
+		},
 	}
 
 	base := filepath.Join("..", "templates")
