@@ -8,6 +8,8 @@
     --accent-hover: #1d4ed8;
     --border: #e5e5e5;
     --tag-bg: #f0f0f0;
+    --btn-bg: var(--accent);
+    --btn-hover: var(--accent-hover);
     --max-width: 42rem;
 }
 
@@ -21,6 +23,8 @@
         --accent-hover: #93bbfd;
         --border: #333;
         --tag-bg: #2a2a2a;
+        --btn-bg: #2563eb;
+        --btn-hover: #1d4ed8;
     }
 }
 
@@ -171,6 +175,12 @@ nav {
 .post-header time {
     font-size: 0.9rem;
     color: var(--text-secondary);
+}
+
+.post-body a,
+.project-body a,
+.page a {
+    text-decoration: underline;
 }
 
 .post-body h2,
@@ -447,7 +457,7 @@ h4:hover .anchor {
     padding: 0.5rem 1.5rem;
     font-size: 0.95rem;
     font-family: inherit;
-    background: var(--accent);
+    background: var(--btn-bg);
     color: #fff;
     border: none;
     border-radius: 4px;
@@ -455,7 +465,7 @@ h4:hover .anchor {
 }
 
 .comment-form button:hover {
-    background: var(--accent-hover);
+    background: var(--btn-hover);
 }
 
 /* ── Search ── */
@@ -484,7 +494,7 @@ h4:hover .anchor {
     padding: 0.5rem 1.5rem;
     font-size: 0.95rem;
     font-family: inherit;
-    background: var(--accent);
+    background: var(--btn-bg);
     color: #fff;
     border: none;
     border-radius: 4px;
@@ -492,7 +502,7 @@ h4:hover .anchor {
 }
 
 .search-form button:hover {
-    background: var(--accent-hover);
+    background: var(--btn-hover);
 }
 
 .search-results {
