@@ -149,9 +149,12 @@ func TestAdminSubscribers(t *testing.T) {
 	}
 
 	var result struct {
-		Total    int      `json:"total"`
-		Verified int      `json:"verified"`
-		Recent   []string `json:"recent"`
+		Total    int `json:"total"`
+		Verified int `json:"verified"`
+		Recent   []struct {
+			Email     string `json:"email"`
+			CreatedAt string `json:"created_at"`
+		} `json:"recent"`
 	}
 	if err := json.NewDecoder(w.Body).Decode(&result); err != nil {
 		t.Fatalf("decoding response: %v", err)
@@ -162,8 +165,8 @@ func TestAdminSubscribers(t *testing.T) {
 	if result.Verified != 1 {
 		t.Errorf("verified = %d, want 1", result.Verified)
 	}
-	if len(result.Recent) != 1 || result.Recent[0] != "verified@example.com" {
-		t.Errorf("recent = %v, want [verified@example.com]", result.Recent)
+	if len(result.Recent) != 1 || result.Recent[0].Email != "verified@example.com" {
+		t.Errorf("recent = %v, want [{verified@example.com ...}]", result.Recent)
 	}
 }
 

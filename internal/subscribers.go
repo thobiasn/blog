@@ -126,18 +126,22 @@ func (app *App) handleSubscribeRemove(w http.ResponseWriter, r *http.Request) {
 
 func (app *App) handleAdminSubscribers(w http.ResponseWriter, r *http.Request) {
 	var total, verified int
-	var recent []string
+	type recentSub struct {
+		Email     string `json:"email"`
+		CreatedAt string `json:"created_at"`
+	}
+	var recent []recentSub
 	if app.db != nil {
 		app.db.QueryRow(`SELECT COUNT(*) FROM subscribers`).Scan(&total)
 		app.db.QueryRow(`SELECT COUNT(*) FROM subscribers WHERE verified = 1`).Scan(&verified)
 
-		rows, err := app.db.Query(`SELECT email FROM subscribers WHERE verified = 1 ORDER BY created_at DESC LIMIT 5`)
+		rows, err := app.db.Query(`SELECT email, created_at FROM subscribers WHERE verified = 1 ORDER BY created_at DESC LIMIT 5`)
 		if err == nil {
 			defer rows.Close()
 			for rows.Next() {
-				var email string
-				if rows.Scan(&email) == nil {
-					recent = append(recent, email)
+				var s recentSub
+				if rows.Scan(&s.Email, &s.CreatedAt) == nil {
+					recent = append(recent, s)
 				}
 			}
 		}
@@ -145,9 +149,9 @@ func (app *App) handleAdminSubscribers(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(struct {
-		Total    int      `json:"total"`
-		Verified int      `json:"verified"`
-		Recent   []string `json:"recent"`
+		Total    int         `json:"total"`
+		Verified int         `json:"verified"`
+		Recent   []recentSub `json:"recent"`
 	}{total, verified, recent})
 }
 
