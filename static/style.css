@@ -151,7 +151,7 @@ nav {
     font-weight: 600;
 }
 
-.post-list time {
+.post-list .post-meta {
     font-size: 0.85rem;
     color: var(--text-secondary);
 }
@@ -178,14 +178,10 @@ nav {
 }
 
 .read-time {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     color: var(--text-secondary);
 }
 
-.post-header .read-time::before {
-    content: "·";
-    margin: 0 0.4rem;
-}
 
 .post-body a,
 .project-body a,
