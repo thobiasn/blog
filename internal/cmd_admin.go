@@ -122,8 +122,9 @@ func Subscribers(args []string) {
 	defer resp.Body.Close()
 
 	var result struct {
-		Total    int `json:"total"`
-		Verified int `json:"verified"`
+		Total    int      `json:"total"`
+		Verified int      `json:"verified"`
+		Recent   []string `json:"recent"`
 	}
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		fmt.Fprintf(os.Stderr, "error decoding response: %v\n", err)
@@ -132,4 +133,10 @@ func Subscribers(args []string) {
 
 	fmt.Printf("Total:    %d\n", result.Total)
 	fmt.Printf("Verified: %d\n", result.Verified)
+	if len(result.Recent) > 0 {
+		fmt.Println("Recent:")
+		for _, email := range result.Recent {
+			fmt.Printf("  %s\n", email)
+		}
+	}
 }
