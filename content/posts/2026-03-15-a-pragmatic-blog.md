@@ -105,7 +105,7 @@ Commands:
   subscribers                    subscriber stats
 ```
 
-A few handy commands for writing locally, and a handy dashboard for a quick glance.
+A few handy commands for writing locally, and a dashboard for a quick glance.
 
 ```
 ❯ ./blog dash
